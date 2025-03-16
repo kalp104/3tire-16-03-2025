@@ -1,0 +1,432 @@
+@model PizzaShop.Repository.ModelView.MenuWithItemsViewModel
+@{
+    bool canEdit = ViewBag.permission[2].Canedit;
+    bool canDelete = ViewBag.permission[2].Candelete;
+}
+<Aside class=" rightsideborder sideBar border-right-primary rounded p-3">
+    <div class="logoheader">
+        <h4 class="text-primary d-flex justify-content-between align-items-center">
+            Modifiers Group
+
+            <a type="button" class="text-decoration-none bg-light px-1 border border-2 rounded border-primary"
+                data-bs-toggle="modal" data-bs-target="#exampleModal1" data-bs-whatever="">
+                <img src="~/images/icons/plus-solid.svg" alt="" class="" height="20px">
+            </a>
+        </h4>
+
+    </div>
+    <ul>
+        <!-- <li class="d-flex align-items-center gap-2"><img src="./images/images/icons/bowl-food-solid.svg" height="20px"> Sandwich</li> -->
+        <div class="nav flex-column nav-pills " id="v-pills-tab" role="tablist" aria-orientation="vertical">
+            @if (Model.modifiergroups != null)
+            {
+
+                @foreach (var modifier in Model.modifiergroups)
+                {
+
+                    <li class="nav-link links modifierGroup-link d-flex justify-content-between align-items-center gap-2 @(ViewBag.SelectedModifierId == modifier.Modifiergroupid ? "active" : "")"
+                        id="v-pills-@modifier.Modifiergroupid-tab" data-modifier-group-id="@modifier.Modifiergroupid"
+                        data-modifier-group-name="@modifier.Modifiergroupname"
+                        data-modifier-group-description="@modifier.Modifiergroupdescription">
+
+                        <a
+                            class="text-decoration-none @(ViewBag.SelectedModifierId == modifier.Modifiergroupid ? "text-white" : "text-dark")">
+                            <i class="bi bi-grid-3x2-gap-fill me-2"></i>@modifier.Modifiergroupname
+                        </a>
+
+                        <div class="activePens d-none">
+                            @if (canEdit == true)
+                            {
+                                <a href="#" class="text-primary edit-modifier-group-btn"
+                                    data-modifier-group-id="@modifier.Modifiergroupid">
+                                    <i class="bi bi-pen mx-1"></i>
+                                </a>
+                            }
+                            @if (canDelete == true)
+                            {
+                                <a href="#" d class="text-primary delete-modifier-group-btn"
+                                    data-modifier-group-id="@modifier.Modifiergroupid">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            }
+
+                        </div>
+                    </li>
+
+
+
+                }
+            }
+
+        </div>
+    </ul>
+
+</Aside>
+
+
+
+
+
+<div class="p-3 w-100">
+    <h5>Modifiers</h5>
+    <!-- food data content will go here -->
+    <div class="tab-content " id="v-pills-tabContent">
+        <div class="tab-pane fade show active" id="" role="tabpanel" aria-labelledby="v-pills-sandwich-tab"
+            tabindex="0">
+            <div class="d-flex justify-content-end ">
+                <div class="position-relative bg-white mx-2 border border-1 rounded ">
+                    <input type="text" id="searchInput" placeholder="Search" class="search_bar">
+
+                    <img src="~/images/search-icon.svg" width="20px" class="search_bar_img">
+                </div>
+                @if (canDelete)
+                {
+                    <button class="btn-light border p-2 ms-2" data-bs-toggle="modal" data-bs-target="#exampleModal4"
+                        id="deleteModifiers" disabled>
+                        <i class="bi bi-trash"></i>
+                    </button>
+                }
+
+                <a href="#" data-bs-toggle="modal" data-bs-target="#addModifiers"
+                    class=" btn btn-primary text-decoration-none mx-2 d-flex justify-content-center align-items-center p-2 rounded text-white">+<span
+                        class="spanClass text-white" id="buttonContent">New Modifier</span></a>
+            </div>
+            @* -------------------------------------partial view for Modifiers----------------------------------------- *@
+            <div id="collapse2" class="tabularData ">
+                @Html.Partial("_ModifiersPartial", Model)
+            </div>
+
+            @* [pagging] *@
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-end align-items-center d-lg-flex d-sm-flex gap-2">
+                    <div class="d-flex align-items-center mb-2 mt-2">
+                        <span>Items per page: &nbsp</span>
+                        <div class="dropdown">
+                            <button class="btn border dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                                aria-expanded="false" id="itemsPerPageBtn2">
+                                5
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu1">
+                                <li><a class="dropdown-item page-size-option page-size-option2" href="#"
+                                        data-size="5">5</a></li>
+                                <li><a class="dropdown-item page-size-option page-size-option2" href="#"
+                                        data-size="10">10</a></li>
+                                <li><a class="dropdown-item page-size-option page-size-option2" href="#"
+                                        data-size="15">15</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center mb-2 mt-2">
+                        <span id="pagination-info2">Showing 1-5 of 5</span>
+                        <li class="page-item">
+                            <a class="page-link prev-page mx-2" href="#" id="prevPage2">&lt;</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link next-page" href="#" id="nextPage2">></a>
+                        </li>
+                    </div>
+                </ul>
+            </nav>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+@* edit modal for modifier group pending *@
+
+<div class="modal fade" id="editModfierGroupModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                hii
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Understood</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+@* delete modal for modifier group *@
+
+<div class="modal fade" id="delteModifierGroupModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
+    aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Delete Modifier </h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" asp-action="DeleteModifierGroup" asp-controller="Menu">
+                    <div class="modal-body d-flex flex-column justify-content-center align-items-center ">
+                        <img src="~/images/toppng.com-warning-icon-2400x2400.png" height="40px" width="40px">
+                        <div class=""> Are you sure you want to delete this modifier Group?
+                        </div>
+                    </div>
+                    <input type="hidden" asp-for="Userid" value="@ViewBag.UserId">
+                    <input type="hidden" id="deleteModifierGroupId" asp-for="Modifiergroupid" value="">
+
+                    <div class="modal-footer d-flex-col justify-content-center">
+                        <button type="submit" class="btn btn-primary">Yes</button>
+                        <button type="button" class="btn border-primary text-primary"
+                            data-bs-dismiss="modal">No</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+@* nulti delte modifiers *@
+<!-- Multiple delete modal -->
+<div class="modal fade" id="exampleModal4" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Delete Modifiers</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" asp-action="DeleteMultipleModifiers" asp-controller="Menu"
+                    id="deleteMultipleModifiersForm">
+                    <div class="modal-body d-flex flex-column justify-content-center align-items-center">
+                        <img src="~/images/toppng.com-warning-icon-2400x2400.png" height="40px" width="40px">
+                        <div>Are you sure you want to delete the selected modifiers?</div>
+                        <input type="hidden" name="selectedModifierIds" id="selectedModifierIds" value="" />
+                    </div>
+                    <div class="modal-footer d-flex justify-content-center">
+                        <button type="submit" class="btn btn-primary">Yes</button>
+                        <button type="button" class="btn border-primary text-primary"
+                            data-bs-dismiss="modal">No</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+@* ------------------------------modal for add Modifier group----------------------------------- *@
+@Html.Partial("_AddModifierGroupPartial", Model)
+
+@* -------------------------------modal for add modifiers------------------------------------- *@
+@Html.Partial("_AddModifiersModalPartial")
+
+
+
+
+
+
+
+
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Handle Edit Button Click
+        @* $(".edit-modifier-group-btn").click(function () {
+            let modifierId = $(this).data("modifier-group-id");
+            let modifierElement = $(`[data-modifier-group-id='${modifierId}']`);
+            let modifierName =  modifierElement.data("modifier-group-name");
+            let modifierGroupDescription = modifierElement.data("modifier-group-description");
+
+            $("#editCategoryId").val(categoryId);
+            $("#editCategoryName").val(categoryName);
+            $("#editCategoryDescription").val(categoryDescription);
+
+            $("#editCategoryModal").modal("show");
+        }); *@
+
+            // Handle Delete Button Click
+            $(".delete-modifier-group-btn").click(function () {
+                let modifierId = $(this).data("modifier-group-id");
+
+                $("#deleteModifierGroupId").val(modifierId);
+                @* $("#deleteCategoryText").html("Are you sure you want to delete this category?"); *@
+
+                    $("#delteModifierGroupModal").modal("show");
+            });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        var rowsPerPage = 5; // Default items per page
+        var currentPage = 1;
+        var totalItems = @Model.TotalItems1;
+        var selectedCategory = null;
+        var searchTerm = '';
+        var selectedModifierIds = []; // Store selected modifier IDs persistently
+
+        // AJAX call fetch function
+        function fetchModifiers(modifierGroupId, searchTerm = '', page, pageSize) {
+            $.ajax({
+                url: '@Url.Action("FilterModifiers", "Menu")',
+                type: 'GET',
+                data: { modifierGroupId: modifierGroupId, searchTerm: searchTerm, pageNumber: page, pageSize: pageSize },
+                success: function (data) {
+                    $('#collapse2').html(data);
+                    totalItems = parseInt($('#ModifiersContainer').attr('data-total-modifiers')) || 0;
+                    updatePagination();
+                    restoreCheckboxSelections(); // Reapply selections after fetch
+                    updateDeleteButtonState(); // Update delete button state
+                },
+                error: function () {
+                    console.error('Error loading modifiers.');
+                    alert('Error loading modifiers.');
+                }
+            });
+        }
+
+        // Pagination update function
+        function updatePagination() {
+            var totalPages = Math.ceil(totalItems / rowsPerPage);
+            var startItem = (currentPage - 1) * rowsPerPage + 1;
+            var endItem = Math.min(currentPage * rowsPerPage, totalItems);
+
+            $("#pagination-info2").text(`Showing ${startItem}-${endItem} of ${totalItems}`);
+            $("#prevPage2").toggleClass("disabled", currentPage === 1);
+            $("#nextPage2").toggleClass("disabled", currentPage >= totalPages);
+        }
+
+        // Restore checkbox selections after fetch
+        function restoreCheckboxSelections() {
+            $('.item-checkbox').each(function () {
+                var modifierId = $(this).val();
+                if (selectedModifierIds.includes(modifierId)) {
+                    $(this).prop('checked', true);
+                }
+            });
+            $('#selectAllCheckbox').prop('checked', $('.item-checkbox').length === $('.item-checkbox:checked').length);
+        }
+
+        // Update delete button state
+        function updateDeleteButtonState() {
+            $('#deleteModifiers').prop('disabled', selectedModifierIds.length === 0);
+        }
+
+        // Pagination controls
+        $(document).on('click', '#prevPage2', function (e) {
+            e.preventDefault();
+            if (currentPage > 1) {
+                currentPage--;
+                fetchModifiers(selectedCategory, searchTerm, currentPage, rowsPerPage);
+            }
+        });
+
+        $(document).on('click', '#nextPage2', function (e) {
+            e.preventDefault();
+            if (currentPage * rowsPerPage < totalItems) {
+                currentPage++;
+                fetchModifiers(selectedCategory, searchTerm, currentPage, rowsPerPage);
+            }
+        });
+
+        $(document).on('click', '.page-size-option2', function (e) {
+            e.preventDefault();
+            rowsPerPage = parseInt($(this).data("size"));
+            $("#itemsPerPageBtn2").text(rowsPerPage);
+            currentPage = 1;
+            fetchModifiers(selectedCategory, searchTerm, currentPage, rowsPerPage);
+        });
+
+        $(document).on('click', '.modifierGroup-link', function (e) {
+            e.preventDefault();
+            $(".modifierGroup-link").removeClass("active");
+            $(this).addClass("active");
+            selectedCategory = $(this).data('modifier-group-id') || $(this).attr('data-modifier-group-id');
+            currentPage = 1;
+            fetchModifiers(selectedCategory, searchTerm, currentPage, rowsPerPage);
+        });
+
+        $(document).on('input', '#searchInput', function () {
+            searchTerm = $(this).val().trim();
+            currentPage = 1;
+            fetchModifiers(selectedCategory, searchTerm, currentPage, rowsPerPage);
+        });
+
+        // Select/Deselect all checkboxes
+        $(document).on('click', '#selectAllCheckbox', function () {
+            var isChecked = this.checked;
+            $('.item-checkbox').prop('checked', isChecked);
+            var currentPageIds = $('.item-checkbox').map(function () {
+                return $(this).val();
+            }).get();
+
+            if (isChecked) {
+                currentPageIds.forEach(function (id) {
+                    if (!selectedModifierIds.includes(id)) {
+                        selectedModifierIds.push(id);
+                    }
+                });
+            } else {
+                selectedModifierIds = selectedModifierIds.filter(id => !currentPageIds.includes(id));
+            }
+            updateDeleteButtonState();
+        });
+
+        // Individual checkbox selection
+        $(document).on('click', '.item-checkbox', function () {
+            var modifierId = $(this).val();
+            if ($(this).is(':checked')) {
+                if (!selectedModifierIds.includes(modifierId)) {
+                    selectedModifierIds.push(modifierId);
+                }
+            } else {
+                selectedModifierIds = selectedModifierIds.filter(id => id !== modifierId);
+            }
+            $('#selectAllCheckbox').prop('checked', $('.item-checkbox').length === $('.item-checkbox:checked').length);
+            updateDeleteButtonState();
+        });
+
+        // Populate selected modifier IDs in the modal and ensure it opens
+        $(document).on('click', '#deleteModifiers', function (e) {
+            if (!$(this).prop('disabled')) {
+                $('#selectedModifierIds').val(selectedModifierIds.join(','));
+                $('#exampleModal4').modal('show'); // Explicitly trigger modal
+            }
+        });
+
+        $('#exampleModal4').on('show.bs.modal', function () {
+            $('#selectedModifierIds').val(selectedModifierIds.join(','));
+        });
+
+        // Initial fetch
+        fetchModifiers(selectedCategory, searchTerm, currentPage, rowsPerPage);
+    });
+</script>

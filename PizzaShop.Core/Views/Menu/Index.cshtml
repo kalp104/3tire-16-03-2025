@@ -1,0 +1,77 @@
+@{
+    Layout = "~/Views/Shared/_Dashboard.cshtml";
+}
+@model PizzaShop.Repository.ModelView.MenuWithItemsViewModel
+<!-- all body code goes here -->
+<!-- menu code -->
+<div class="py-4 px-3  d-flex justify-content-between">
+    <h3 class="text-blue">Menu</h3>
+</div>
+<div class="maincontent">
+
+    <div class="formclass  border rounded ">
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button"
+                    role="tab" aria-controls="home" >
+                    <img src="~/images/icons/bars-solid.svg" height="20px" alt="">
+                    Category
+                </button>
+            </li>   
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button"
+                    role="tab" aria-controls="profile" >
+                    <img src="~/images/icons/pen-to-square-solid.svg" height="20px" alt="">
+                    Modifiers
+                </button>
+            </li>
+        </ul>
+    </div>
+    <div class="formclass  border rounded ">
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                <div class="nav-home">
+                    @* CATEGORY PARTIAL VIEW *@
+                    @Html.Partial("_CategoryPartial",Model) 
+                </div>
+            </div>
+            <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                <div class="nav-home">
+                    @* MODIFIER PARTIAL VIEW *@
+                    @Html.Partial("_ModifiersGroupPartial",Model)
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+@section scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+
+            var CategoryAdd = '@TempData["CategoryAdd"]';
+            if (CategoryAdd) {
+                toastr.success(CategoryAdd, 'success', { timeOut: 3000 });
+            }
+            var ModifierGroupAdd = '@TempData["ModifierGroupAdd"]';
+            if (ModifierGroupAdd) {
+                toastr.success(ModifierGroupAdd, 'success', { timeOut: 3000 });
+            }
+            var ModifierGroupAdd = '@TempData["SuccessMessage"]';
+            if (ModifierGroupAdd) {
+                toastr.success(ModifierGroupAdd, 'success', { timeOut: 3000 });
+            }
+            var ModifierGroupAdd = '@TempData["ErrorMessage"]';
+            if (ModifierGroupAdd) {
+                toastr.error(ModifierGroupAdd, 'error', { timeOut: 3000 });
+            }
+
+        });
+    </script>
+}   

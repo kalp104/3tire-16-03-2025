@@ -1,0 +1,270 @@
+@* Views/Shared/_AddCategoryModal.cshtml *@
+@model PizzaShop.Repository.ModelView.MenuWithItemsViewModel
+
+<div class="modal fade" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+    data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Add Modifier Group</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="addModifierGroupForm">
+                    <form method="post" asp-action="AddModifierGroup" asp-controller="Menu">
+                        <input type="hidden" asp-for="Userid" value="@ViewBag.UserId">
+                        <input type="hidden" asp-for="selectedIds" id="selectedIds1" />
+                        <div class="form-floating mb-3">
+                            <input asp-for="Modifiergroupname" type="text" class="form-control" id="floatingInput"
+                                placeholder="name">
+                            <label for="floatingInput">Name</label>
+                            <span class="text-danger" asp-validation-for="Modifiergroupname"></span>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <textarea class="form-control" asp-for="Modifiergroupdescription"
+                                placeholder="Leave a comment here" id="floatingTextarea2"
+                                style="height: 100px"></textarea>
+                            <label for="floatingTextarea2">Description</label>
+                            <span class="text-danger" asp-validation-for="Modifiergroupdescription"></span>
+                        </div>
+                        <div class="float-end">
+                            <button type="submit" class="btn btn-primary">Save</button>
+                            <button type="button" class="btn border-primary text-primary" data-bs-dismiss="modal">Cancel</button>
+                        </div>
+                    </form>
+
+                    <div class="py-4">
+                        <a class="text-decoration-none link-to-modifiers text-primary" href="#">+ Add existing modifiers</a>
+                    </div>
+                    <div class="py-4" id="selectedModifiersContainer">
+                        <div class="d-flex flex-wrap">
+                            @if (Model.selectedModifiersViewModels != null)
+                            {
+                                @foreach (var v in Model.selectedModifiersViewModels)
+                                {
+                                    <div class="border border-2 px-2 text-primary rounded-pill border-primary me-2 mb-2"
+                                        data-id="@v.ModifierId">
+                                        @v.ModifierName <span class="text-dark remove-modifier"
+                                            style="cursor: pointer;" data-id="@v.ModifierId">x</span>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="addxisitingModifiers">
+                    <div class="float-end w-50 position-relative bg-white mx-2 border border-1 rounded">
+                        <input type="text" id="searchInput2" placeholder="Search" class="search_bar">
+                        <img src="~/images/search-icon.svg" width="20px" class="search_bar_img">
+                    </div>
+                    <form method="post" asp-action="AddModifierGroupDetails" asp-controller="Menu" id="modifierForm">
+                        <div id="collapse3" class="tabularData">
+                            @* Partial view content will be loaded here *@
+                        </div>
+                        <input type="hidden" name="selectedIds" id="selectedIds" />
+                        <nav aria-label="Page navigation example">
+                            <ul class="m-2 pagination justify-content-end align-items-center d-lg-flex d-sm-flex gap-2">
+                                <div class="d-flex align-items-center mb-2 mt-2">
+                                    <span>Items per page: </span>
+                                    <div class="dropdown">
+                                        <button class="btn border dropdown-toggle" type="button"
+                                            data-bs-toggle="dropdown" aria-expanded="false" id="itemsPerPageBtn3">
+                                            5
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu1">
+                                            <li><a class="dropdown-item page-size-option page-size-option3" href="#"
+                                                    data-size="5">5</a></li>
+                                            <li><a class="dropdown-item page-size-option page-size-option3" href="#"
+                                                    data-size="10">10</a></li>
+                                            <li><a class="dropdown-item page-size-option page-size-option3" href="#"
+                                                    data-size="15">15</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center mb-2 mt-2">
+                                    <span id="pagination-info3">Showing 1-5 of 5</span>
+                                    <li class="page-item">
+                                        <a class="page-link prev-page mx-2" href="#" id="prevPage3"><</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link next-page" href="#" id="nextPage3">></a>
+                                    </li>
+                                </div>
+                            </ul>
+                        </nav>
+                        <div class="float-end">
+                            <button type="submit" class="btn btn-primary" id="addButton">Add</button>
+                            <a class="btn border-primary text-primary close-modifiers" href="#">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        var rowsPerPage = 5; // Default items per page
+        var currentPage = 1;
+        var totalItems = @Model.TotalItems1;
+        var selectedCategory = null;
+        var searchTerm = '';
+        var selectedModifierIds = [];
+
+        // Initial state
+        $("#addModifierGroupForm").show();
+        $(".addxisitingModifiers").hide();
+
+        // Function to fetch modifiers via AJAX
+        function fetchModifiers(modifierGroupId, searchTerm = '', page, pageSize) {
+            $.ajax({
+                url: '@Url.Action("FilterModifiersAtAddCategory", "Menu")',
+                type: 'GET',
+                data: { modifierGroupId: modifierGroupId, searchTerm: searchTerm, pageNumber: page, pageSize: pageSize },
+                success: function (data) {
+                    $('#collapse3').html(data);
+                    totalItems = parseInt($('#ModifiersContainer2').attr('data-total-modifiers')) || 0;
+                    updatePagination();
+                },
+                error: function () {
+                    alert('Error loading modifiers.');
+                }
+            });
+        }
+
+        // Update pagination UI
+        function updatePagination() {
+            var totalPages = Math.ceil(totalItems / rowsPerPage);
+            var startItem = (currentPage - 1) * rowsPerPage + 1;
+            var endItem = Math.min(currentPage * rowsPerPage, totalItems);
+
+            $("#pagination-info3").text(`Showing ${startItem}-${endItem} of ${totalItems}`);
+            $("#prevPage3").toggleClass("disabled", currentPage === 1);
+            $("#nextPage3").toggleClass("disabled", currentPage >= totalPages);
+        }
+
+        // Pagination controls
+        $(document).on('click', '#prevPage3', function (e) {
+            e.preventDefault();
+            if (currentPage > 1) {
+                currentPage--;
+                fetchModifiers(selectedCategory, searchTerm, currentPage, rowsPerPage);
+            }
+        });
+
+        $(document).on('click', '#nextPage3', function (e) {
+            e.preventDefault();
+            if (currentPage * rowsPerPage < totalItems) {
+                currentPage++;
+                fetchModifiers(selectedCategory, searchTerm, currentPage, rowsPerPage);
+            }
+        });
+
+        $(document).on('click', '.page-size-option3', function (e) {
+            e.preventDefault();
+            rowsPerPage = parseInt($(this).data("size"));
+            $("#itemsPerPageBtn3").text(rowsPerPage);
+            currentPage = 1;
+            fetchModifiers(selectedCategory, searchTerm, currentPage, rowsPerPage);
+        });
+
+        $(document).on('click', '.modifierGroup-link', function (e) {
+            e.preventDefault();
+            $(".modifierGroup-link").removeClass("active");
+            $(this).addClass("active");
+            currentPage = 1;
+            fetchModifiers(selectedCategory, searchTerm, currentPage, rowsPerPage);
+        });
+
+        $(document).on('input', '#searchInput2', function () {
+            searchTerm = $(this).val().trim();
+            currentPage = 1;
+            fetchModifiers(selectedCategory, searchTerm, currentPage, rowsPerPage);
+        });
+
+        // Show modifiers when clicking "Link to Modifiers"
+        $(".link-to-modifiers").click(function (e) {
+            e.preventDefault();
+            $("#addModifierGroupForm").hide();
+            $(".addxisitingModifiers").show();
+            fetchModifiers(selectedCategory, searchTerm, currentPage, rowsPerPage); // Fetch data when showing
+        });
+
+        // Hide modifiers and show form when clicking "Cancel"
+        $(".close-modifiers").click(function (e) {
+            e.preventDefault();
+            $(".addxisitingModifiers").hide();
+            $("#addModifierGroupForm").show();
+        });
+
+        // Reset UI when modal is closed
+        $('#exampleModal1').on('hidden.bs.modal', function () {
+            $(".addxisitingModifiers").hide();
+            $("#addModifierGroupForm").show();
+            $('.item-checkbox').prop('checked', false);
+        });
+
+        // Handle form submission for adding modifiers
+        $('#modifierForm').on('submit', function (e) {
+            e.preventDefault();
+
+            // Collect selected modifier IDs
+            $('.item-checkbox:checked').each(function () {
+                var id = parseInt($(this).val());
+                if (!selectedModifierIds.includes(id)) {
+                    selectedModifierIds.push(id);
+                }
+            });
+
+            // Update hidden inputs with selected IDs
+            $('#selectedIds').val(selectedModifierIds.join(','));
+            $('#selectedIds1').val(selectedModifierIds.join(','));
+
+            $.ajax({
+                url: '@Url.Action("AddModifierGroupDetails", "Menu")',
+                type: 'POST',
+                data: $(this).serialize(),
+                dataType: 'json',
+                success: function (response) {
+                    if (response && response.success && response.modifiers) {
+                        // Update UI with returned modifier names
+                        response.modifiers.forEach(function (modifier) {
+                            if ($(`#selectedModifiersContainer div[data-id="${modifier.modifierid}"]`).length === 0) {
+                                $('#selectedModifiersContainer .d-flex').append(
+                                    `<div class="border border-2 px-2 text-primary rounded-pill border-primary me-2 mb-2" data-id="${modifier.modifierid}">
+                                        ${modifier.modifiername} <span class="text-dark remove-modifier" style="cursor: pointer;" data-id="${modifier.modifierid}">x</span>
+                                    </div>`
+                                );
+                            }
+                        });
+                        // Reset UI: hide modifiers, show form, uncheck checkboxes
+                        $(".addxisitingModifiers").hide();
+                        $("#addModifierGroupForm").show();
+                        $('.item-checkbox').prop('checked', false);
+                    } else {
+                        alert(response?.message || 'Error adding modifiers.');
+                    }
+                },
+                error: function () {
+                    alert('Error submitting form. Check the console for details.');
+                }
+            });
+        });
+
+        // Remove modifier pill on 'x' click and update selectedModifierIds
+        $(document).on('click', '.remove-modifier', function () {
+            var id = parseInt($(this).data('id'));
+            selectedModifierIds = selectedModifierIds.filter(item => item !== id);
+            $(this).parent().remove();
+            $('#selectedIds').val(selectedModifierIds.join(','));
+            $('#selectedIds1').val(selectedModifierIds.join(','));
+        });
+
+        // Initial fetch (optional, only if modifiers are shown initially)
+        // fetchModifiers(selectedCategory, searchTerm, currentPage, rowsPerPage);
+    });
+</script>

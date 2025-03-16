@@ -1,0 +1,200 @@
+@{
+    Layout = "~/Views/Shared/_Dashboard.cshtml";
+}
+
+    @* ----------------------------------------------------------------------------------logic goes here-------------------------------------------------------------------------------------------------- *@
+
+    <div class="dashboardContent py-4 px-3 display-6">
+        <div class="d-flex pageTitle justify-content-between">
+            <h3 class="d-flex-inline text-blue"> Dashboard</h3>
+
+            <div class="dropdown">
+                <button class="text-decoration-none bg-transparent btn dropdown-toggle border bg-white" type="button"
+                    aria-haspopup="true" data-bs-toggle="dropdown" aria-expanded="false">
+                    Current Month
+                </button>
+                <ul class="dropdown-menu">
+                    <li class="dropdown-item d-flex justify-content-center align-items-center gap-3 mb-3">
+                    </li>
+                    <li><a asp-controller="DashBoardHelpers" asp-action="UserProfile"
+                            class="dropdown-item border-bottom">My Profile</a></li>
+                    <li><a class="dropdown-item border-bottom" asp-controller="DashBoardHelpers"
+                            asp-action="ChangePassword">Change Password</a></li>
+                    <li><a class="dropdown-item border-bottom" asp-controller="Home" asp-action="Logout">Logout</a></li>
+                </ul>
+            </div>
+
+        </div>
+        <div class="container mx-0 mw-100 px-0 mt-3">
+            <div class="row g-4">
+                <div class="col-xxl-3 col-xl-6 col-lg-6 col-md-6 ">
+                    <div
+                        class="bg-white dashboardHeight align-items-end border rounded pb-2 ps-3 flex-row d-flex ">
+                        <div class="d-flex flex-column">
+                            <div class="Value fs-2">
+                                ₹1687
+                            </div>
+                            <div class="Total fs-6">
+                                Total Sales
+                            </div>
+                        </div>
+                        <div class="align-items-start justify-content-end d-flex w-100 h-100 p-2">
+                            <div class="d-flex align-items-center justify-content-center"
+                                style="border-radius: 50%; border: 1px solid lightgreen; height: 60px; width: 60px;">
+                                <div class="align-items-center justify-content-center d-flex"
+                                    style="background-color: lightgreen; border-radius: 50%; height: 45px; width: 45px;">
+                                    <img src="~/images/icons/total-sales.svg" alt="" class="object-fit-fill">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xxl-3 col-xl-6 col-lg-6 col-md-6">
+                    <div
+                        class="bg-white dashboardHeight align-items-end border rounded pb-2 ps-3 flex-row d-flex ">
+                        <div class="d-flex flex-column w-50">
+                            <div class="Value fs-2">
+                                4
+                            </div>
+                            <div class="Total fs-6">
+                                Total Orders
+                            </div>
+                        </div>
+                        <div class="align-items-start justify-content-end d-flex w-100 h-100 p-2">
+                            <div class="d-flex align-items-center justify-content-center"
+                                style="border-radius: 50%; border: 1px solid rgb(185, 144, 238); height: 60px; width: 60px;">
+                                <div class="align-items-center justify-content-center d-flex"
+                                    style="background-color: rgb(185, 144, 238); border-radius: 50%; height: 45px; width: 45px;">
+                                    <img src="~/images/icons/total-orders.svg" alt="" class="object-fit-fill">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xxl-3 col-xl-6 col-lg-6 col-md-6">
+                    <div
+                        class="bg-white dashboardHeight align-items-end border rounded pb-2 ps-3 flex-row d-flex ">
+                        <div class="d-flex flex-column w-50">
+                            <div class="Value fs-2">
+                                ₹421.75
+                            </div>
+                            <div class="Total fs-6">
+                                Avg. Order Value
+                            </div>
+                        </div>
+                        <div class="align-items-start justify-content-end d-flex w-100 h-100 p-2">
+                            <div class="d-flex align-items-center justify-content-center"
+                                style="border-radius: 50%; border: 1px solid rgb(144, 166, 238); height: 60px; width: 60px;">
+                                <div class="align-items-center justify-content-center d-flex"
+                                    style="background-color:  rgb(144, 166, 238); border-radius: 50%; height: 45px; width: 45px;">
+                                    <img src="~/images/icons/order-value.svg" alt="" class="object-fit-fill">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xxl-3 col-xl-6 col-lg-6 col-md-6">
+                    <div
+                        class="bg-white dashboardHeight align-items-end border rounded pb-2 ps-3 flex-row d-flex ">
+                        <div class="d-flex flex-column w-75">
+                            <div class="Value fs-2">
+                                6.96 Min
+                            </div>
+                            <div class="Total fs-6">
+                                Avg. Waiting Time
+                            </div>
+                        </div>
+                        <div class="align-items-start justify-content-end d-flex w-100 h-100 p-2">
+                            <div class="d-flex align-items-center justify-content-center"
+                                style="border-radius: 50%; border: 1px solid rgb(238, 144, 144); height: 60px; width: 60px;">
+                                <div class="align-items-center justify-content-center d-flex"
+                                    style="background-color: rgb(238, 144, 144); border-radius: 50%; height: 45px; width: 45px;">
+                                    <img src="~/images/icons/waiting-time.svg" alt="" class="object-fit-fill">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container mx-0 mw-100 px-0 mt-3">
+            <div class="row">
+                <div class="col-md-6">
+                    <div
+                        class="bg-white dashboardBoxHeight border pt-2 ps-3 fs-4 rounded d-flex align-items-start justify-content-start ">
+                        Revenue
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div
+                        class="bg-white dashboardBoxHeight border pt-2 ps-3 fs-4 rounded d-flex align-items-start justify-content-start ">
+                        Revenue
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container mx-0 mw-100 px-0 mt-3">
+            <div class="row g-4">
+                <div class="col-xxl-3 col-xl-6 col-lg-6 col-md-6">
+                    <div
+                        class="bg-white dashboardAnalyticsHeight fs-4 pt-2 ps-3 border rounded d-flex align-items-start justify-content-start ">
+                        Top Selling Items
+                    </div>
+                </div>
+                <div class="col-xxl-3 col-xl-6 col-lg-6 col-md-6">
+                    <div
+                        class="bg-white dashboardAnalyticsHeight fs-4 pt-2 ps-3 border rounded d-flex align-items-start justify-content-start ">
+                        Least Selling Items
+                    </div>
+                </div>
+                <div class="col-xxl-3 col-xl-6 col-lg-6 col-md-6">
+                    <div
+                        class="bg-white dashboardAnalyticsHeight align-items-end border rounded pb-2 ps-3 flex-row d-flex ">
+                        <div class="d-flex flex-column w-75">
+                            <div class="Value fs-2">
+                                6
+                            </div>
+                            <div class="Total fs-6">
+                                Waiting List Count
+                            </div>
+                        </div>
+                        <div class="align-items-start justify-content-end d-flex w-100 h-100 p-2">
+                            <div class="d-flex align-items-center justify-content-center"
+                                style="border-radius: 50%; border: 1px solid darkgoldenrod; height: 60px; width: 60px;">
+                                <div class="align-items-center justify-content-center d-flex"
+                                    style="background-color: darkgoldenrod; border-radius: 50%; height: 45px; width: 45px;">
+                                    <img src="~/images/icons/waiting-list.svg" alt="" class="object-fit-fill">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xxl-3 col-xl-6 col-lg-6 col-md-6">
+                    <div
+                        class="bg-white dashboardAnalyticsHeight align-items-end border rounded pb-2 ps-3 flex-row d-flex ">
+                        <div class="d-flex flex-column w-75">
+                            <div class="Value fs-2">
+                                696
+                            </div>
+                            <div class="Total fs-6">
+                                New Customer Count
+                            </div>
+                        </div>
+                        <div class="align-items-start justify-content-end d-flex w-100 h-100 p-2">
+                            <div class="d-flex align-items-center justify-content-center"
+                                style="border-radius: 50%; border: 1px solid rgb(250, 164, 114); height: 60px; width: 60px;">
+                                <div class="align-items-center justify-content-center d-flex"
+                                    style="background-color:rgb(250, 164, 114); border-radius: 50%; height: 45px; width: 45px;">
+                                    <img src="~/images/icons/customer.svg" alt="" class="object-fit-fill">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+

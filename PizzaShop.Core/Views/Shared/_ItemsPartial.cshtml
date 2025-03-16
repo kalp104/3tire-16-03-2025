@@ -1,0 +1,195 @@
+@model PizzaShop.Repository.ModelView.MenuWithItemsViewModel
+@{
+    bool canEdit = ViewBag.permission[2].Canedit;
+    bool canDelete = ViewBag.permission[2].Candelete;
+}
+<div class="p-2" id="itemsContainer" data-total-items="@Model.TotalItems">
+    @if (Model.Items != null && Model.Items.Any())
+    {
+        <table class="table text-nowrap">
+            <thead>
+                <tr>
+                    <th><input class="form-check-input" type="checkbox" value="" id="selectAllCheckbox"></th>
+                    <th>Name</th>
+                    <th>Item Type</th>
+                    <th>Rate</th>
+                    <th>Quantity</th>
+                    <th>Available</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var i in Model.Items)
+                {
+                    <tr>
+                        <td><input class="form-check-input item-checkbox" type="checkbox" name="selectedItemIds"
+                                value="@i.Itemid" data-item-id="@i.Itemid"></td>
+                        <td>
+                            @if (string.IsNullOrEmpty(i.Imageid) || i.Imageid == "default")
+                            {
+                                <img src="~/images/dining-menu.png" class="rounded-circle" height="30px" width="30px" alt="">
+                            }
+                            else
+                            {
+                                <img src="@i.Imageid" class="rounded-circle" height="30px" width="30px" alt="">
+                            }
+                            @i.Itemname
+                        </td>
+                        <td>
+                            @if (i.Itemtype == 1)
+                            {
+                                <img src="~/images/icons/veg-icon.svg" class="mx-3" height="20px" alt="">
+                            }
+                            else
+                            {
+                                <img src="~/images/icons/non-veg-icon.svg" class="mx-3" height="20px" alt="">
+                            }
+                        </td>
+                        <td>@i.Rate</td>
+                        <td>
+                            <div class="mx-3">@i.Quantity</div>
+                        </td>
+                        <td>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" disabled
+                                    @(i.Isavailabe == true ? "checked" : "") />
+                            </div>
+                        </td>
+                        <td>
+                            @if (canEdit == true)
+                            {
+                                <a href="#" class="edit-item-link" data-item-id="@i.Itemid"><i class="bi bi-pen mx-1"></i></a>
+                            }
+                            @if (canDelete == true)
+                            {
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#ItemDeleteModal" data-item-id="@i.Itemid"
+                                    class="delete-item-link">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="d-flex align-items-center justify-content-center">No Items Found</div>
+    }
+</div>
+
+
+
+
+
+
+
+
+
+<!-- Single Edit Modal -->
+
+<div class="modal fade AddItemBox" id="ItemEditModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" id="modalContent">
+            <!-- Partial view will be loaded here -->
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+<!-- Single Delete Modal -->
+
+<div class="modal fade" id="ItemDeleteModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="deleteModalLabel">Delete Confirmation</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" asp-action="DeleteItem" asp-controller="Menu" id="deleteForm">
+                <div class="modal-body d-flex flex-column justify-content-center align-items-center">
+                    <img src="~/images/toppng.com-warning-icon-2400x2400.png" height="40px" width="40px">
+                    <div class="">Are you sure you want to delete this item?</div>
+                </div>
+                <input type="hidden" name="Userid" value="@ViewBag.Userid" />
+                <input type="hidden" name="itemid" id="deleteItemId" value="" />
+                <div class="modal-footer d-flex-col justify-content-center">
+                    <button type="submit" class="btn btn-primary">Yes</button>
+                    <button type="button" class="btn border-primary text-primary" data-bs-dismiss="modal">No</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+@* --- scripts --- *@
+
+<script>
+    $(document).ready(function () {
+        // Event delegation for dynamically loaded items
+        $(document).on('click', '.delete-item-link', function (e) {
+            e.preventDefault(); // Prevent default link behavior
+
+            var itemId = $(this).attr('data-item-id'); // Fetch item ID from clicked element
+            // Set hidden input value
+            $('#deleteItemId').val(itemId);
+
+        });
+        $(document).on("click", ".edit-item-link", function (e) {
+            e.preventDefault();
+
+            var itemId = $(this).data("item-id");
+            $.ajax({
+                url: "/Menu/EditItemPartial/" + itemId,
+                type: "GET",
+                success: function (data) {
+                    $("#modalContent").html(data);
+                    $("#ItemEditModal").modal("show");
+                },
+                error: function () {
+                    alert("Error loading item details.");
+                }
+            });
+        });
+
+        $(document).on("submit", "#editItemForm", function (e) {
+            e.preventDefault();
+
+            var form = $(this);
+            var formData = new FormData(this);
+
+            $.ajax({
+                url: form.attr("action"),
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    if (response.success) {
+                        $("#ItemEditModal").modal("hide");
+                    } else {
+                        alert(response.message);
+                        $("#modalContent").html(response);
+                    }
+                },
+                error: function () {
+                    alert("Error updating item.");
+                }
+            });
+        });
+    });
+</script>
+

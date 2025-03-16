@@ -1,0 +1,243 @@
+@{
+    Layout = "~/Views/Shared/_Dashboard.cshtml";
+}
+
+<!-- user Table -->
+<div class="py-4 px-3  d-flex justify-content-between">
+    <h3 class="text-blue">Users</h3>
+    <div class="d-flex justify-content-between gap-3">
+        <div class="position-relative bg-white border border-1 rounded ">
+            <input type="text" name="" placeholder="Search" class="search_bar">
+            <img src="~/images/search-icon.svg" width="20px" class="search_bar_img">
+        </div>
+        <a asp-action="AddUser" asp-controller="UserTable"
+            class=" text-decoration-none bg-blue d-flex justify-content-center align-items-center p-2 rounded text-white">+<span
+                class="spanClass text-white" id="buttonContent">Add users</span></a>
+    </div>
+</div>
+<div class="bg-white  border rounded  p-4 mx-3">
+    <div id="collapse1" class="tabularData ">
+        <div class="p-2 " id="#collapse1">
+            <table class="table text-nowrap">
+                <thead>
+                    <th class="text-nowrap">
+                        Name
+                        <button class="bg-transparent border-0"><i class="bi bi-arrow-up"></i></button>
+                        <button class="bg-transparent border-0"><i class="bi bi-arrow-down"></i></button>
+                    </th>
+                    <th class="text-center">Email</th>
+                    <th class="text-center">Phone</th>
+                    <th class="text-center">
+                        Role
+                        <button class="bg-transparent border-0"><i class="bi bi-arrow-up"></i></button>
+                        <button class="bg-transparent border-0"><i class="bi bi-arrow-down"></i></button>
+                    </th>
+                    <th class="text-center">Status</th>
+                    <th class="text-center">Action</th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><img class="m-1" src="~/images/Default_pfp.svg.png" height="25px" alt="">bruce
+                            wayne</td>
+                        <td>bat.man@gotam.com</td>
+                        <td>9993923923</td>
+                        <td>Admin</td>
+                        <td>
+                            <span class="Active">Active</span>
+                        </td>
+                        <td>
+                            <a class="mx-1"><i class="bi bi-pen"></i></a>
+                            <a data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-end align-items- d-lg-flex d-sm-flex gap-2">
+            <div class="d-flex align-items-center mb-2 mt-2">
+                <span>Items per page: &nbsp</span>
+                <div class="dropdown">
+                    <button class="btn border dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                        aria-expanded="false" id="itemsPerPageBtn">
+                        5
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item page-size-option" href="#" data-size="5">5</a></li>
+                        <li><a class="dropdown-item page-size-option" href="#" data-size="10">10</a></li>
+                        <li><a class="dropdown-item page-size-option" href="#" data-size="15">15</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="d-flex align-items-center mb-2 mt-2">
+                <span id="pagination-info">Showing 1-5 of 5</span>
+                <li class="page-item">
+                    <a class="page-link prev-page mx-2" href="#">&lt;</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link next-page" href="#">></a>
+                </li>
+            </div>
+        </ul>
+    </nav>
+</div>
+
+
+@section scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+
+            let currentPage = 1;
+            let pageSize = 5;
+
+            function fetchUsers(page, size, searchTerm = "") {
+                $.ajax({
+                    url: `/UserTable/GetUsers`,
+                    type: "GET",
+                    data: { page: page, pageSize: size, searchTerm: searchTerm },
+                    dataType: "json",
+                    success: function (data) {
+
+                        updateTable(data.data, data.canedit, data.candelete);
+                        updatePagination(page, data.totalUsers, size);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error fetching users:", error);
+                    }
+                });
+            }
+            $(".search_bar").on("input", function () {
+                let searchTerm = $(this).val().trim().toLowerCase();
+                fetchUsers(1, pageSize, searchTerm);
+            });
+            function updateTable(users, canedit, candelete) {
+                const tbody = $("tbody");
+                tbody.empty(); // Clear existing rows
+                $.each(users, function (index, user) {
+
+                    let spanTag = '';
+                    if (user.status == 1) spanTag = `<span class="Active">Active</span>`;
+                    if (user.status == 2) spanTag = `<span class="Inactive">Inactive</span>`;
+                    if (user.status == 3) spanTag = `<span class="pending">Pending</span>`;
+                    let roleTag = '';
+                    if (user.role == 3) roleTag = `Admin`;
+                    if (user.role == 2) roleTag = `Chef`;
+                    if (user.role == 1) roleTag = `AccountManager`;
+                    var image = "~/images/Default_pfp.svg.png";
+
+                    if (user.image != 'default') image = user.image;
+
+
+                    var edit = `<form method="get" action="/UserTable/EditUserById" class="d-inline">
+                                            <input type="hidden" name="id" value="${user.id}">
+                                            <button type="submit" class="btn btn-link p-0 mx-1"><i class="bi bi-pen"></i></button>
+                                        </form>`;
+                    var del = `<a href="#" data-bs-toggle="modal" data-bs-target="#exampleModal${user.id}">
+                                            <i class="bi bi-trash"></i>
+                                        </a>`;
+                    const row = `<tr>
+                                    <td><img class="m-1 rounded-circle" src="${image}" height="25px" width="25px" alt="">${user.firstname} ${user.lastname}</td>
+                                    <td class="text-center">${user.email}</td>
+                                    <td class="text-center">${user.phone}</td>
+                                    <td class="text-center">${roleTag}</td>
+                                    <td class="text-center">${spanTag}</td>
+                                    <td class="text-center">
+                                         ${canedit ? edit : ""}
+                                        ${candelete ? del : ""}
+                                        <div class="modal fade" id="exampleModal${user.id}" tabindex="-1" aria-labelledby="exampleModalLabel${user.id}" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h1 class="modal-title fs-5" id="exampleModalLabel${user.id}">Delete Confirmation</h1>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body d-flex flex-column justify-content-center align-items-center ">
+                                                        <img src="/images/toppng.com-warning-icon-2400x2400.png" height="40px" width="40px">
+                                                        <div class=""> Are you sure you want to delete this user?</div>
+                                                    </div>
+                                                    <div class="modal-footer d-flex-col justify-content-center ">
+                                                        <form method="post" action="/UserTable/deleteUserById">
+                                                            <input type="hidden" name="id" value="${user.id}">
+                                                            <button type="submit" class="btn btn-primary">Yes</button>
+                                                        </form>
+                                                        <button class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>`;
+                    tbody.append(row);
+                });
+            }
+
+            function updatePagination(currentPage, totalUsers, pageSize) {
+                const totalPages = Math.ceil(totalUsers / pageSize);
+
+                $("#pagination-info").text(`Showing ${(currentPage - 1) * pageSize + 1}-${Math.min(currentPage * pageSize, totalUsers)} of ${totalUsers}`);
+
+                $(".prev-page").toggleClass("disabled", currentPage <= 1);
+                $(".next-page").toggleClass("disabled", currentPage >= totalPages);
+
+                $(".prev-page").off("click").on("click", function (e) {
+                    e.preventDefault();
+                    if (currentPage > 1) {
+                        fetchUsers(--currentPage, pageSize);
+                    }
+                });
+
+                $(".next-page").off("click").on("click", function (e) {
+                    e.preventDefault();
+                    if (currentPage < totalPages) {
+                        fetchUsers(++currentPage, pageSize);
+                    }
+                });
+            }
+
+            $(".prev-page").click(function (e) {
+                e.preventDefault();
+                if (currentPage > 1) {
+                    fetchUsers(--currentPage, pageSize);
+                }
+            });
+
+            $(".next-page").click(function (e) {
+                e.preventDefault();
+                fetchUsers(++currentPage, pageSize);
+            });
+
+            $(".page-size-option").click(function (e) {
+                e.preventDefault();
+                pageSize = $(this).data("size");
+                $("#itemsPerPageBtn").text(pageSize);
+                currentPage = 1; // Reset to first page
+                fetchUsers(currentPage, pageSize);
+            });
+
+            // Load first page initially
+            fetchUsers(currentPage, pageSize);
+
+
+            //toasters
+
+            var success = "@TempData["SUCCESSDELETE"]";
+            if (success) {
+                toastr.success(success, 'Success', { timeOut: 3000 });
+            }
+            var errormessage = "@TempData["ERROR"]";
+            if (errormessage) {
+                toastr.error(errormessage, 'error', { timeOut: 3000 });
+            }
+
+            var infomessage = "@TempData["NoChange"]";
+            if (infomessage) {
+                toastr.info(infomessage, 'info', { timeOut: 3000 });
+            }
+
+        });
+    </script>
+}

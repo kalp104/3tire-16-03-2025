@@ -1,0 +1,35 @@
+@* Views/Shared/_AddCategoryModal.cshtml *@
+@model PizzaShop.Repository.ModelView.MenuWithItemsViewModel
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+    data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Add Category</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" asp-action="AddCategory" asp-controller="Menu">
+                    <input type="hidden" asp-for="Userid" value="@ViewBag.UserId">
+                    <div class="form-floating mb-3">
+                        <input asp-for="CategoryName" type="text" class="form-control" id="floatingInput"
+                            placeholder="name">
+                        <label for="floatingInput">name</label>
+                        <span class="text-danger" asp-validation-for="CategoryName"></span>
+                    </div>
+                    <div class="form-floating">
+                        <textarea class="form-control" asp-for="CategoryDescription" placeholder="Leave a comment here"
+                            id="floatingTextarea2" style="height: 100px"></textarea>
+                        <label for="floatingTextarea2">Description</label>
+                        <span class="text-danger" asp-validation-for="CategoryDescription"></span>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
