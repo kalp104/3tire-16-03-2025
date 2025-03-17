@@ -1,0 +1,212 @@
+@model PizzaShop.Repository.ModelView.MenuWithItemsViewModel
+
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true"
+    data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="editModalLabel">Edit Modifier Group</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="editModifierGroupForm">
+                    <form method="post" asp-action="EditModifierGroup" asp-controller="Menu">
+                        <input type="hidden" asp-for="Userid" value="@ViewBag.UserId" />
+                        <input type="hidden" asp-for="Modifiergroupid" id="modifierGroupId" />
+                        <input type="hidden" asp-for="selectedIds" id="selectedIds1" />
+                        <div class="form-floating mb-3">
+                            <input asp-for="Modifiergroupname" type="text" class="form-control" id="floatingInput"
+                                placeholder="name">
+                            <label for="floatingInput">Name</label>
+                            <span class="text-danger" asp-validation-for="Modifiergroupname"></span>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <textarea class="form-control" asp-for="Modifiergroupdescription"
+                                placeholder="Leave a comment here" id="floatingTextarea2"
+                                style="height: 100px"></textarea>
+                            <label for="floatingTextarea2">Description</label>
+                            <span class="text-danger" asp-validation-for="Modifiergroupdescription"></span>
+                        </div>
+                        <div class="float-end">
+                            <button type="submit" class="btn btn-primary">Save</button>
+                            <button type="button" class="btn border-primary text-primary" data-bs-dismiss="modal">Cancel</button>
+                        </div>
+                    </form>
+
+                    <div class="py-4">
+                        <a class="text-decoration-none link-to-modifiers text-primary" href="#">+ Edit modifiers</a>
+                    </div>
+                    <div class="py-4" id="selectedModifiersContainer">
+                        <div class="d-flex flex-wrap">
+                            @if (Model.selectedModifiersViewModels != null)
+                            {
+                                @foreach (var v in Model.selectedModifiersViewModels)
+                                {
+                                    <div class="border border-2 px-2 text-primary rounded-pill border-primary me-2 mb-2"
+                                        data-id="@v.ModifierId">
+                                        @v.ModifierName <span class="text-dark remove-modifier"
+                                            style="cursor: pointer;" data-id="@v.ModifierId">x</span>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="addxisitingModifiers">
+                    <!-- Same modifier selection UI as in add modal -->
+                    <!-- Copy the addxisitingModifiers div from your add modal -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Similar JavaScript as add modal with modifications
+    $(document).ready(function () {
+        var rowsPerPage = 5;
+        var currentPage = 1;
+        var totalItems = @Model.TotalItems1;
+        var selectedModifierIds = [];
+
+        // Function to load existing modifier group data
+        function loadModifierGroup(modifierGroupId) {
+            $.ajax({
+                url: '@Url.Action("GetModifierGroup", "Menu")',
+                type: 'GET',
+                data: { id: modifierGroupId },
+                success: function (data) {
+                    $('#Modifiergroupname').val(data.modifiergroupname);
+                    $('#floatingTextarea2').val(data.modifiergroupdescription);
+                    $('#modifierGroupId').val(data.modifiergroupid);
+                    
+                    // Load existing modifiers
+                    $('#selectedModifiersContainer .d-flex').empty();
+                    selectedModifierIds = [];
+                    if (data.selectedModifiers) {
+                        data.selectedModifiers.forEach(function (modifier) {
+                            selectedModifierIds.push(modifier.modifierId);
+                            $('#selectedModifiersContainer .d-flex').append(
+                                `<div class="border border-2 px-2 text-primary rounded-pill border-primary me-2 mb-2" data-id="${modifier.modifierId}">
+                                    ${modifier.modifierName} <span class="text-dark remove-modifier" style="cursor: pointer;" data-id="${modifier.modifierId}">x</span>
+                                </div>`
+                            );
+                        });
+                    }
+                    $('#selectedIds1').val(selectedModifierIds.join(','));
+                }
+            });
+        }
+
+        // Rest of the JavaScript similar to add modal with modifications
+        // Add event handler for edit button
+        $('.edit-modifier-group').on('click', function() {
+            var modifierGroupId = $(this).data('id');
+            loadModifierGroup(modifierGroupId);
+            $('#editModal').modal('show');
+        });
+
+        // Modify form submission
+        $('#editModifierGroupForm form').on('submit', function(e) {
+            e.preventDefault();
+            $('#selectedIds1').val(selectedModifierIds.join(','));
+            $.ajax({
+                url: '@Url.Action("EditModifierGroup", "Menu")',
+                type: 'POST',
+                data: $(this).serialize(),
+                success: function(response) {
+                    if (response.success) {
+                        $('#editModal').modal('hide');
+                        location.reload(); // Or update UI accordingly
+                    }
+                }
+            });
+        });
+
+        // Rest of the modifier selection logic same as add modal
+    });
+</script>
+
+
+
+
+public class MenuController : Controller
+{
+    private readonly IMenuService _menuService;
+
+    // GET: Load modifier group data
+    [HttpGet]
+    public async Task<IActionResult> GetModifierGroup(int id)
+    {
+        var modifierGroup = await _menuService.GetModifierGroupById(id);
+        if (modifierGroup == null)
+            return NotFound();
+
+        return Json(new
+        {
+            modifiergroupid = modifierGroup.Modifiergroupid,
+            modifiergroupname = modifierGroup.Modifiergroupname,
+            modifiergroupdescription = modifierGroup.Modifiergroupdescription,
+            selectedModifiers = modifierGroup.selectedModifiersViewModels?.Select(m => new
+            {
+                modifierId = m.ModifierId,
+                modifierName = m.ModifierName
+            })
+        });
+    }
+
+    // POST: Edit modifier group
+    [HttpPost]
+    public async Task<IActionResult> EditModifierGroup(MenuWithItemsViewModel model)
+    {
+        try
+        {
+            List<int> modifierIds = string.IsNullOrEmpty(model.selectedIds)
+                ? new List<int>()
+                : model.selectedIds.Split(',').Select(int.Parse).ToList();
+
+            model.SelectedModifierIds = modifierIds;
+            await _menuService.UpdateModifierGroupService(model);
+            await FetchData();
+            
+            TempData["ModifierGroupEdit"] = "Modifier Group updated successfully";
+            return Json(new { success = true });
+        }
+        catch (Exception ex)
+        {
+            return Json(new { success = false, message = ex.Message });
+        }
+    }
+}
+
+
+
+
+
+public interface IMenuService
+{
+    Task<MenuWithItemsViewModel> GetModifierGroupById(int id);
+    Task UpdateModifierGroupService(MenuWithItemsViewModel model);
+    // ... other existing methods
+}
+
+public class MenuService : IMenuService
+{
+    public async Task<MenuWithItemsViewModel> GetModifierGroupById(int id)
+    {
+        // Implementation to fetch modifier group from database
+    }
+
+    public async Task UpdateModifierGroupService(MenuWithItemsViewModel model)
+    {
+        // Implementation to update modifier group and its associated modifiers
+        // 1. Update basic info (name, description)
+        // 2. Update modifier associations (remove old ones, add new ones)
+    }
+}
+
+
+
+<!-- Example in your Index view -->
+<button class="btn btn-primary edit-modifier-group" data-id="@modifierGroup.Modifiergroupid">Edit</button>

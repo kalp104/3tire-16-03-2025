@@ -50,4 +50,6 @@ public partial class Item
     public bool? DefaultTax { get; set; }
 
     public virtual Category Category { get; set; } = null!;
+
+    public virtual ICollection<ItemModifiergroupMapping> ItemModifiergroupMappings { get; set; } = new List<ItemModifiergroupMapping>();
 }

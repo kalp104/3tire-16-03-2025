@@ -173,24 +173,64 @@
       "PackagePath": "staticwebassets\\items\\1a258c92-28c4-4a0c-9dea-6bca6f0175e5.png"
     },
     {
+      "Id": "F:\\3tire-16-03-2025\\PizzaShop.Core\\wwwroot\\items\\1b55aa74-3d93-4861-8c70-0b771efcf6a1.png",
+      "PackagePath": "staticwebassets\\items\\1b55aa74-3d93-4861-8c70-0b771efcf6a1.png"
+    },
+    {
+      "Id": "F:\\3tire-16-03-2025\\PizzaShop.Core\\wwwroot\\items\\315f986d-7c27-43c0-9da9-e3b082906007.png",
+      "PackagePath": "staticwebassets\\items\\315f986d-7c27-43c0-9da9-e3b082906007.png"
+    },
+    {
+      "Id": "F:\\3tire-16-03-2025\\PizzaShop.Core\\wwwroot\\items\\33688af5-1cac-400b-9423-03bfeedc8fd2.png",
+      "PackagePath": "staticwebassets\\items\\33688af5-1cac-400b-9423-03bfeedc8fd2.png"
+    },
+    {
+      "Id": "F:\\3tire-16-03-2025\\PizzaShop.Core\\wwwroot\\items\\4b81b34e-d8bd-4942-988f-a1a7028eb4f5.png",
+      "PackagePath": "staticwebassets\\items\\4b81b34e-d8bd-4942-988f-a1a7028eb4f5.png"
+    },
+    {
       "Id": "F:\\3tire-16-03-2025\\PizzaShop.Core\\wwwroot\\items\\4ce4aec8-766d-44de-8e5a-dbeb89ca65ba.png",
       "PackagePath": "staticwebassets\\items\\4ce4aec8-766d-44de-8e5a-dbeb89ca65ba.png"
+    },
+    {
+      "Id": "F:\\3tire-16-03-2025\\PizzaShop.Core\\wwwroot\\items\\5ea6f37a-6961-4e17-ab47-4d84bfcb4ad6.png",
+      "PackagePath": "staticwebassets\\items\\5ea6f37a-6961-4e17-ab47-4d84bfcb4ad6.png"
     },
     {
       "Id": "F:\\3tire-16-03-2025\\PizzaShop.Core\\wwwroot\\items\\773bfb37-f092-4046-8bc7-edd99280b863.jpg",
       "PackagePath": "staticwebassets\\items\\773bfb37-f092-4046-8bc7-edd99280b863.jpg"
     },
     {
+      "Id": "F:\\3tire-16-03-2025\\PizzaShop.Core\\wwwroot\\items\\84f0c738-de6b-4b30-86d1-e4bbd3d4db3b.png",
+      "PackagePath": "staticwebassets\\items\\84f0c738-de6b-4b30-86d1-e4bbd3d4db3b.png"
+    },
+    {
       "Id": "F:\\3tire-16-03-2025\\PizzaShop.Core\\wwwroot\\items\\8a6839d2-2cfd-414d-bc75-cdcc648d4c43.png",
       "PackagePath": "staticwebassets\\items\\8a6839d2-2cfd-414d-bc75-cdcc648d4c43.png"
+    },
+    {
+      "Id": "F:\\3tire-16-03-2025\\PizzaShop.Core\\wwwroot\\items\\8c4602b0-67b3-458a-91e3-06eed0131f41.png",
+      "PackagePath": "staticwebassets\\items\\8c4602b0-67b3-458a-91e3-06eed0131f41.png"
+    },
+    {
+      "Id": "F:\\3tire-16-03-2025\\PizzaShop.Core\\wwwroot\\items\\9ea23f35-445a-43af-a5fa-56bea4a26bd2.png",
+      "PackagePath": "staticwebassets\\items\\9ea23f35-445a-43af-a5fa-56bea4a26bd2.png"
     },
     {
       "Id": "F:\\3tire-16-03-2025\\PizzaShop.Core\\wwwroot\\items\\a27db1a6-00f8-44ac-ace2-7347f25fc52f.png",
       "PackagePath": "staticwebassets\\items\\a27db1a6-00f8-44ac-ace2-7347f25fc52f.png"
     },
     {
+      "Id": "F:\\3tire-16-03-2025\\PizzaShop.Core\\wwwroot\\items\\aea6e4a2-6d5b-43ca-8c17-654c985c666c.png",
+      "PackagePath": "staticwebassets\\items\\aea6e4a2-6d5b-43ca-8c17-654c985c666c.png"
+    },
+    {
       "Id": "F:\\3tire-16-03-2025\\PizzaShop.Core\\wwwroot\\items\\b29bfd08-a235-49b8-83ca-df85323fefeb.png",
       "PackagePath": "staticwebassets\\items\\b29bfd08-a235-49b8-83ca-df85323fefeb.png"
+    },
+    {
+      "Id": "F:\\3tire-16-03-2025\\PizzaShop.Core\\wwwroot\\items\\b48f4f02-c294-41df-ae9e-340d8cdf3237.png",
+      "PackagePath": "staticwebassets\\items\\b48f4f02-c294-41df-ae9e-340d8cdf3237.png"
     },
     {
       "Id": "F:\\3tire-16-03-2025\\PizzaShop.Core\\wwwroot\\items\\b9721ca6-573b-4779-8224-c6b40756de53.png",
@@ -205,6 +245,10 @@
       "PackagePath": "staticwebassets\\items\\c850e59b-9a68-4101-9030-33305ff87306.png"
     },
     {
+      "Id": "F:\\3tire-16-03-2025\\PizzaShop.Core\\wwwroot\\items\\d8ae37c7-1c6d-4f88-b377-ad2b6a74f643.png",
+      "PackagePath": "staticwebassets\\items\\d8ae37c7-1c6d-4f88-b377-ad2b6a74f643.png"
+    },
+    {
       "Id": "F:\\3tire-16-03-2025\\PizzaShop.Core\\wwwroot\\items\\dc0ea321-6849-4648-a225-b7ef139f0890.jfif",
       "PackagePath": "staticwebassets\\items\\dc0ea321-6849-4648-a225-b7ef139f0890.jfif"
     },
@@ -215,6 +259,10 @@
     {
       "Id": "F:\\3tire-16-03-2025\\PizzaShop.Core\\wwwroot\\items\\f48c62d7-364d-47d8-93e5-dae633415e84.png",
       "PackagePath": "staticwebassets\\items\\f48c62d7-364d-47d8-93e5-dae633415e84.png"
+    },
+    {
+      "Id": "F:\\3tire-16-03-2025\\PizzaShop.Core\\wwwroot\\js\\addItem.js",
+      "PackagePath": "staticwebassets\\js\\addItem.js"
     },
     {
       "Id": "F:\\3tire-16-03-2025\\PizzaShop.Core\\wwwroot\\js\\menu.js",
@@ -463,6 +511,10 @@
     {
       "Id": "F:\\3tire-16-03-2025\\PizzaShop.Core\\wwwroot\\uploads\\1163888a-fcce-4ce5-9257-493faf749621.jpg",
       "PackagePath": "staticwebassets\\uploads\\1163888a-fcce-4ce5-9257-493faf749621.jpg"
+    },
+    {
+      "Id": "F:\\3tire-16-03-2025\\PizzaShop.Core\\wwwroot\\uploads\\154bbf08-8a7d-4e50-b7c9-4d781217c147_86cc99a7-878a-4d2d-bba5-d2c38f94b88f.jpg",
+      "PackagePath": "staticwebassets\\uploads\\154bbf08-8a7d-4e50-b7c9-4d781217c147_86cc99a7-878a-4d2d-bba5-d2c38f94b88f.jpg"
     },
     {
       "Id": "F:\\3tire-16-03-2025\\PizzaShop.Core\\wwwroot\\uploads\\17bb4d76-c12a-49eb-8f52-a5446e302999_premium_photo-1683121366070-5ceb7e007a97.jfif",

@@ -57,6 +57,21 @@
     }
 </div>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <!-- Edit Modifiers Modal -->
 <div class="modal fade AddItemBox" id="editModal-Modifier" data-bs-backdrop="static" data-bs-keyboard="false"
     tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
@@ -72,9 +87,9 @@
                 <input type="hidden" name="Userid" value="@ViewBag.Userid" />
                 <div class="modal-body">
                     <div class="row">
-                        <div class="col-6 mb-3">
-                            <label class="form-label">Modifier Groups</label>
-                            <div class="checkbox-container" style="max-height: 150px; overflow-y: auto;">
+                        <div class="col-6 mb-3 border border rounded ">
+                            <label class="form-label " style="font-size: 14px; margin-bottom: 0px; margin-top: 6px;">Modifier Groups</label>
+                            <div class="checkbox-container" style="height:100px; overflow-y: scroll;">
                                 @if (Model.modifiergroups != null && Model.modifiergroups.Any())
                                 {
                                     @foreach (var c in Model.modifiergroups)
@@ -146,6 +161,31 @@
     </div>
 </div>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <!-- Delete Modal (Unchanged) -->
 <div class="modal fade" id="staticBackdrop1-Modifier" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
     aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -171,15 +211,28 @@
     </div>
 </div>
 
-<!-- Scripts -->
 
-<!-- Load jQuery -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@*  Scripts *@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<!-- Load Bootstrap JS (Make sure it's included) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- jQuery Validation (if needed) -->
 <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
 <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
 
@@ -254,7 +307,7 @@
                     $('.modal-backdrop').remove();
                     $('body').removeClass('modal-open');
 
-                    // Reload page or update UI
+                    // Reload page here
                     location.reload();
                 },
                 error: function (xhr, status, error) {
@@ -264,7 +317,7 @@
             });
         });
 
-        // Ensure modal closes properly on manual close
+        // closing the modal
         $('#editModal-Modifier').on('hidden.bs.modal', function () {
             $('.modal-backdrop').remove();
             $('body').removeClass('modal-open');
@@ -282,7 +335,7 @@
 
             console.log("Modifier ID clicked:", modifierId);
 
-            // Set the hidden input value
+            // Setting my hidden input value
             $('#deleteModifierId').val(modifierId);
         });
     });

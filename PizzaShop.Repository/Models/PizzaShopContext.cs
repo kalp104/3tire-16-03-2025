@@ -27,6 +27,8 @@ public partial class PizzaShopContext : DbContext
 
     public virtual DbSet<Item> Items { get; set; }
 
+    public virtual DbSet<ItemModifiergroupMapping> ItemModifiergroupMappings { get; set; }
+
     public virtual DbSet<Modfierandgroupsmapping> Modfierandgroupsmappings { get; set; }
 
     public virtual DbSet<Modifier> Modifiers { get; set; }
@@ -39,7 +41,11 @@ public partial class PizzaShopContext : DbContext
 
     public virtual DbSet<Role> Roles { get; set; }
 
+    public virtual DbSet<Section> Sections { get; set; }
+
     public virtual DbSet<State> States { get; set; }
+
+    public virtual DbSet<Table> Tables { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
 
@@ -221,6 +227,57 @@ public partial class PizzaShopContext : DbContext
                 .HasConstraintName("item_categoryid_fkey");
         });
 
+        modelBuilder.Entity<ItemModifiergroupMapping>(entity =>
+        {
+            entity.HasKey(e => e.Itemmodifierid).HasName("item_modifiergroup_mapping_pkey");
+
+            entity.ToTable("item_modifiergroup_mapping");
+
+            entity.Property(e => e.Itemmodifierid).HasColumnName("itemmodifierid");
+            entity.Property(e => e.Createdat)
+                .HasDefaultValueSql("now()")
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("createdat");
+            entity.Property(e => e.Createdbyid)
+                .HasDefaultValue(0)
+                .HasColumnName("createdbyid");
+            entity.Property(e => e.Deletedat)
+                .HasDefaultValueSql("now()")
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("deletedat");
+            entity.Property(e => e.Deletedbyid)
+                .HasDefaultValue(0)
+                .HasColumnName("deletedbyid");
+            entity.Property(e => e.Editedat)
+                .HasDefaultValueSql("now()")
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("editedat");
+            entity.Property(e => e.Editedbyid)
+                .HasDefaultValue(0)
+                .HasColumnName("editedbyid");
+            entity.Property(e => e.Isdeleted)
+                .HasDefaultValue(false)
+                .HasColumnName("isdeleted");
+            entity.Property(e => e.Itemid).HasColumnName("itemid");
+            entity.Property(e => e.Maxvalue)
+                .HasDefaultValue(0)
+                .HasColumnName("maxvalue");
+            entity.Property(e => e.Minvalue)
+                .HasDefaultValue(0)
+                .HasColumnName("minvalue");
+            entity.Property(e => e.Modifiergroupid).HasColumnName("modifiergroupid");
+
+            entity.HasOne(d => d.Item).WithMany(p => p.ItemModifiergroupMappings)
+                .HasForeignKey(d => d.Itemid)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("item_modifiergroup_mapping_itemid_fkey");
+
+            entity.HasOne(d => d.Modifiergroup).WithMany(p => p.ItemModifiergroupMappings)
+                .HasForeignKey(d => d.Modifiergroupid)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("item_modifiergroup_mapping_modifiergroupid_fkey");
+        });
+
         modelBuilder.Entity<Modfierandgroupsmapping>(entity =>
         {
             entity.HasKey(e => e.Modfierandgroupsmappingid).HasName("modfierandgroupsmapping_pkey");
@@ -386,6 +443,43 @@ public partial class PizzaShopContext : DbContext
                 .HasColumnName("rolename");
         });
 
+        modelBuilder.Entity<Section>(entity =>
+        {
+            entity.HasKey(e => e.Sectionid).HasName("sections_pkey");
+
+            entity.ToTable("sections");
+
+            entity.Property(e => e.Sectionid).HasColumnName("sectionid");
+            entity.Property(e => e.Createdat)
+                .HasDefaultValueSql("now()")
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("createdat");
+            entity.Property(e => e.Createdbyid)
+                .HasDefaultValue(0)
+                .HasColumnName("createdbyid");
+            entity.Property(e => e.Deletedat)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("deletedat");
+            entity.Property(e => e.Deletedbyid)
+                .HasDefaultValue(0)
+                .HasColumnName("deletedbyid");
+            entity.Property(e => e.Editedat)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("editedat");
+            entity.Property(e => e.Editedbyid)
+                .HasDefaultValue(0)
+                .HasColumnName("editedbyid");
+            entity.Property(e => e.Isdeleted)
+                .HasDefaultValue(false)
+                .HasColumnName("isdeleted");
+            entity.Property(e => e.Sectiondescription)
+                .HasMaxLength(50)
+                .HasColumnName("sectiondescription");
+            entity.Property(e => e.Sectionname)
+                .HasMaxLength(50)
+                .HasColumnName("sectionname");
+        });
+
         modelBuilder.Entity<State>(entity =>
         {
             entity.HasKey(e => e.Stateid).HasName("state_pkey");
@@ -402,6 +496,46 @@ public partial class PizzaShopContext : DbContext
                 .HasForeignKey(d => d.Countryid)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("state_countryid_fkey");
+        });
+
+        modelBuilder.Entity<Table>(entity =>
+        {
+            entity.HasKey(e => e.Tableid).HasName("tables_pkey");
+
+            entity.ToTable("tables");
+
+            entity.Property(e => e.Tableid).HasColumnName("tableid");
+            entity.Property(e => e.Capacity).HasColumnName("capacity");
+            entity.Property(e => e.Createdat)
+                .HasDefaultValueSql("now()")
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("createdat");
+            entity.Property(e => e.Createdbyid)
+                .HasDefaultValue(0)
+                .HasColumnName("createdbyid");
+            entity.Property(e => e.Deletedat)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("deletedat");
+            entity.Property(e => e.Deletedbyid)
+                .HasDefaultValue(0)
+                .HasColumnName("deletedbyid");
+            entity.Property(e => e.Editedat)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("editedat");
+            entity.Property(e => e.Editedbyid)
+                .HasDefaultValue(0)
+                .HasColumnName("editedbyid");
+            entity.Property(e => e.Isdeleted).HasColumnName("isdeleted");
+            entity.Property(e => e.Sectionid).HasColumnName("sectionid");
+            entity.Property(e => e.Status).HasColumnName("status");
+            entity.Property(e => e.Tablename)
+                .HasMaxLength(50)
+                .HasColumnName("tablename");
+
+            entity.HasOne(d => d.Section).WithMany(p => p.Tables)
+                .HasForeignKey(d => d.Sectionid)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("tables_sectionid_fkey");
         });
 
         modelBuilder.Entity<User>(entity =>

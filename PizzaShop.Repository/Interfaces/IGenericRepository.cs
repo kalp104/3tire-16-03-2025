@@ -28,5 +28,7 @@ public interface IGenericRepository<T> where T : class
     Task<List<Modifier>> GetModifiersByMGAsync(int? id);
     Task<Modfierandgroupsmapping?> GetMappingsById(int Modifiergroupid, int modifierid);
     Task<List<Modfierandgroupsmapping>?> GetByModifierIdAsync(int? modifiersid);
+    Task<List<Modfierandgroupsmapping>?> GetByModifierGroupIdAsync(int? modifierGroupId);
     Task DeleteAsync(T entity);
+    Task<List<ItemModifiergroupMapping>?> GetByItemIdAsync(int? itemId);
 }

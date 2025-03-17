@@ -26,11 +26,13 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserTableService, UserTableService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IMenuService, MenuService>();
+builder.Services.AddScoped<ISectionService, SectionService>();
 
 // Filters
 builder.Services.AddScoped<AuthorizePermissionUserTable>();
 builder.Services.AddScoped<AuthorizePermissionRoles>();
 builder.Services.AddScoped<AuthorizePermissionMenu>();
+builder.Services.AddScoped<AuthorizePermissionSections>();
 
 // Connection string + dependency injection
 builder.Services.AddDbContext<PizzaShopContext>(options =>
@@ -80,7 +82,7 @@ app.UseStatusCodePages(async context =>
 {
     if (context.HttpContext.Response.StatusCode == 404)
     {
-        context.HttpContext.Response.Redirect("/Home/Privacy");
+        context.HttpContext.Response.Redirect("/Home/Error404");
     }
     await Task.CompletedTask;
 });

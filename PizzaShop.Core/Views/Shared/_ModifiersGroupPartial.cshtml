@@ -37,8 +37,8 @@
                         <div class="activePens d-none">
                             @if (canEdit == true)
                             {
-                                <a href="#" class="text-primary edit-modifier-group-btn"
-                                    data-modifier-group-id="@modifier.Modifiergroupid">
+                                <a href="#" class="text-primary edit-modifier-group"
+                                    data-id="@modifier.Modifiergroupid">
                                     <i class="bi bi-pen mx-1"></i>
                                 </a>
                             }
@@ -203,8 +203,7 @@
 
 
 
-@* nulti delte modifiers *@
-<!-- Multiple delete modal -->
+@* multi delte modifiers *@
 <div class="modal fade" id="exampleModal4" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">

@@ -58,7 +58,9 @@
                         <td>
                             @if (canEdit == true)
                             {
-                                <a href="#" class="edit-item-link" data-item-id="@i.Itemid"><i class="bi bi-pen mx-1"></i></a>
+                                <a href="#" class="edit-item-link" data-item-id="@i.Itemid" data-bs-toggle="modal" data-bs-target="#editItemModal">
+                                    <i class="bi bi-pen"></i>
+                                </a>
                             }
                             @if (canDelete == true)
                             {
@@ -89,10 +91,11 @@
 
 <!-- Single Edit Modal -->
 
-<div class="modal fade AddItemBox" id="ItemEditModal" tabindex="-1" aria-hidden="true">
+
+<div class="modal fade AddItemBox" id="editItemModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" id="modalContent">
-            <!-- Partial view will be loaded here -->
+        <div class="modal-content" id="editItemModalContent">
+            <!-- Partial content will be injected here -->
         </div>
     </div>
 </div>
@@ -134,11 +137,15 @@
 
 
 
-
 @* --- scripts --- *@
 
 <script>
     $(document).ready(function () {
+
+
+
+
+
         // Event delegation for dynamically loaded items
         $(document).on('click', '.delete-item-link', function (e) {
             e.preventDefault(); // Prevent default link behavior
@@ -148,19 +155,20 @@
             $('#deleteItemId').val(itemId);
 
         });
-        $(document).on("click", ".edit-item-link", function (e) {
+        $('.edit-item-link').click(function (e) {
             e.preventDefault();
+            var itemId = $(this).data('item-id');
 
-            var itemId = $(this).data("item-id");
             $.ajax({
-                url: "/Menu/EditItemPartial/" + itemId,
-                type: "GET",
+                url: '/Menu/EditItemPartial',
+                type: 'GET',
+                data: { id: itemId },
                 success: function (data) {
-                    $("#modalContent").html(data);
-                    $("#ItemEditModal").modal("show");
+                    $('#editItemModalContent').html(data);
+                    $('#editItemModal').modal('show');
                 },
                 error: function () {
-                    alert("Error loading item details.");
+                    alert("Error loading edit form.");
                 }
             });
         });
@@ -180,6 +188,7 @@
                 success: function (response) {
                     if (response.success) {
                         $("#ItemEditModal").modal("hide");
+                        location.reload();
                     } else {
                         alert(response.message);
                         $("#modalContent").html(response);

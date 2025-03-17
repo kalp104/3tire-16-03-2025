@@ -34,6 +34,7 @@ public class MenuWithItemsViewModel
     //helper view models
     public ItemsViewModel? item { get; set; }
     public ModifiersViewModel? modifiersViewModel {get; set;}
+    public Dictionary<string, ModifierGroupDataHelperViewModel>? SelectedModifierGroups { get; set; }
 
 
     // lists 

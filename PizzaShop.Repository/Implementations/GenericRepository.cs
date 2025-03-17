@@ -229,6 +229,14 @@ namespace PizzaShop.Repository.Implementations
             _dbSet.Remove(entity);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<List<Modfierandgroupsmapping>?> GetByModifierGroupIdAsync(int? modifierGroupId) {
+             return await _context.Modfierandgroupsmappings.Where(u => u.Modifiergroupid == modifierGroupId).ToListAsync();
+        }
+
+        public async Task<List<ItemModifiergroupMapping>?> GetByItemIdAsync(int? itemId) {
+            return await _context.ItemModifiergroupMappings.Where(u => u.Itemid == itemId && u.Isdeleted == false).ToListAsync();
+        }
     }
 }
 

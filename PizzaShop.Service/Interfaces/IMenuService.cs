@@ -17,9 +17,9 @@ public interface IMenuService
     Task DeleteCategoryService(MenuWithItemsViewModel model);
     Task DeleteModifierGroupService(MenuWithItemsViewModel model);
     Task DeleteItemService(int userid, int itemid);
-    Task AddItemAsync(MenuWithItemsViewModel viewModel, IFormFile? uploadFile, int userId);
+    Task AddItemAsync(MenuWithItemsViewModel viewModel, IFormFile? uploadFile, int userId, Dictionary<string,ModifierGroupDataHelperViewModel> modifierGroups );
     Task AddModifierAsync(MenuWithItemsViewModel viewModel);
-    Task UpdateItemAsync(MenuWithItemsViewModel viewModel, IFormFile? uploadFile, int userId);
+    Task UpdateItemAsync(MenuWithItemsViewModel viewModel, IFormFile? uploadFile, int userId, Dictionary<string, ModifierGroupDataHelperViewModel> modifierGroups);
     Task<Item?> GetItemById(int id);
     Task<Modifier?> GetModifierById(int id);
     Task<List<Modifier>> GetModifiersListAsync(List<int> id);
@@ -33,4 +33,6 @@ public interface IMenuService
     Task<List<Modifiergroup>> GetAllModifierGroupsAsync();
     Task<List<int>> GetModifierGroupIdsAsync(int modifierId);
     Task EditModifierAsync(MenuWithItemsViewModel viewModel);
+    Task<List<ModifierDtoViewModel>> GetModifiersByModifierGroupId(int modifierGroupId);
+    Task<List<ModifierGroupDataHelperViewModel>?> GetModifierGroupsByItemId(int itemId);
 }

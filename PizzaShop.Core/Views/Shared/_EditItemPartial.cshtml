@@ -1,5 +1,5 @@
 @model PizzaShop.Repository.ModelView.MenuWithItemsViewModel
-@* edit items partial view *@
+
 <form id="editItemForm" asp-action="EditItem" asp-controller="Menu" method="post" enctype="multipart/form-data">
     <div class="modal-header border-0">
         <h3 class="modal-title fs-5">Edit Menu Item @Model.item.Itemid</h3>
@@ -14,7 +14,9 @@
                             <option value="">Select Category</option>
                             @foreach (var c in Model.Categories)
                             {
-                                <option value="@c.Categoryid" selected="@(c.Categoryid == Model.item.Categoryid)">@c.Categoryname</option>
+                                <option value="@c.Categoryid"
+                                    selected="@(c.Categoryid == Model.item.Categoryid ? "selected" : null)">
+                                    @c.Categoryname</option>
                             }
                         </select>
                         <label>Category</label>
@@ -30,8 +32,9 @@
                     <div class="col-3 form-floating mb-3">
                         <select class="form-select" asp-for="item.Itemtype">
                             <option value="0">Select Type</option>
-                            <option value="1" selected="@(Model.item.Itemtype == 1)">Veg</option>
-                            <option value="2" selected="@(Model.item.Itemtype == 2)">Non-Veg</option>
+                            <option value="1" selected="@(Model.item.Itemtype == 1 ? "selected" : null)">Veg</option>
+                            <option value="2" selected="@(Model.item.Itemtype == 2 ? "selected" : null)">Non-Veg
+                            </option>
                         </select>
                         <label>Item Type</label>
                         <span asp-validation-for="item.Itemtype" class="text-danger"></span>
@@ -42,15 +45,16 @@
                         <span asp-validation-for="item.Rate" class="text-danger"></span>
                     </div>
                     <div class="col-3 form-floating mb-3">
-                        <input type="number" step="0.01" class="form-control" placeholder="Quantity" asp-for="item.Quantity" />
+                        <input type="number" step="0.01" class="form-control" placeholder="Quantity"
+                            asp-for="item.Quantity" />
                         <label>Quantity</label>
                         <span asp-validation-for="item.Quantity" class="text-danger"></span>
                     </div>
                     <div class="col-3 form-floating mb-3">
                         <select class="form-select" asp-for="item.Units">
                             <option value="">Select Unit</option>
-                            <option value="1" selected="@(Model.item.Units == 1)">Piece</option>
-                            <option value="2" selected="@(Model.item.Units == 2)">Kg</option>
+                            <option value="1" selected="@(Model.item.Units == 1 ? "selected" : null)">Piece</option>
+                            <option value="2" selected="@(Model.item.Units == 2 ? "selected" : null)">Kg</option>
                         </select>
                         <label>Unit</label>
                         <span asp-validation-for="item.Units" class="text-danger"></span>
@@ -67,7 +71,8 @@
                         <label>Default Tax</label>
                     </div>
                     <div class="col-3 form-floating mb-3">
-                        <input type="number" step="0.01" class="form-control" placeholder="Tax %" asp-for="item.Taxpercentage" />
+                        <input type="number" step="0.01" class="form-control" placeholder="Tax %"
+                            asp-for="item.Taxpercentage" />
                         <label>Tax %</label>
                         <span asp-validation-for="item.Taxpercentage" class="text-danger"></span>
                     </div>
@@ -79,7 +84,8 @@
                 </div>
                 <div class="row">
                     <div class="col-12 form-floating mb-3">
-                        <input type="text" class="form-control" asp-for="item.Description" placeholder="Item Description">
+                        <input type="text" class="form-control" asp-for="item.Description"
+                            placeholder="Item Description" />
                         <label>Description</label>
                         <span asp-validation-for="item.Description" class="text-danger"></span>
                     </div>
@@ -89,11 +95,13 @@
                     <label class="mb-1">Upload Image</label>
                     <div class="col-12 position-relative p-3 mb-1">
                         <div class="file-upload">
-                            <input class="col drag-area form-control" asp-for="item.UploadFiles" type="file" accept="image/*" />
+                            <input class="col drag-area form-control" asp-for="item.UploadFiles" type="file"
+                                accept="image/*" />
                             <div class="d-flex flex-column justify-content-center align-items-center w-100">
                                 @if (Model.item.UploadFiles != null)
                                 {
-                                    <img src="@Model.item.UploadFiles" class="rounded-circle" height="70px" width="70px" alt="">
+                                    <img src="@Model.item.UploadFiles" class="rounded-circle" height="70px" width="70px"
+                                        alt="Item Image" />
                                 }
                                 else
                                 {
@@ -105,15 +113,230 @@
                     </div>
                 </div>
             </div>
+            <div class="col-4">
+                <div class="col-12 modifier-Group" style="background-color: #f5dd8d59; height: 100%;">
+                    <div class="dropdown mt-1 p-3">
+                        <button
+                            class="btn btn-light dropdown-toggle w-100 d-flex justify-content-between align-items-center"
+                            type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Select Modifier Group(s)
+                        </button>
+                        <ul class="dropdown-menu p-3">
+                            @if (Model.modifiergroups != null)
+                            {
+                                @foreach (var i in Model.modifiergroups)
+                                {
+                                    <li>
+                                        <a class="dropdown-item modifier-group-item d-flex align-items-center" href="#"
+                                            data-modifiergroup-id="@i.Modifiergroupid">
+                                            <input type="checkbox" class="me-2 modifier-checkbox"
+                                                data-modifiergroup-id="@i.Modifiergroupid">
+                                            @i.Modifiergroupname
+                                        </a>
+                                    </li>
+                                }
+                            }
+                            else
+                            {
+                                <span class="alert alert-info">No modifier groups found</span>
+                            }
+                        </ul>
+                    </div>
+                    <div id="modifiers-container" class="mt-2" style="max-height: 400px; overflow-y: auto;"></div>
+                </div>
+            </div>
         </div>
     </div>
+    <input type="hidden" name="SelectedModifierGroups" id="selectedModifierGroups" />
     <div class="modal-footer border-0 justify-content-end">
         <input type="hidden" asp-for="item.Itemid" />
         <button type="submit" class="btn btn-primary">Save</button>
         <a class="btn border-primary text-primary" data-bs-dismiss="modal">Cancel</a>
     </div>
-</form> 
+</form>
 
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
 <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+<script>
+    $(document).ready(function () {
+        console.log("Document ready"); // Debug: Check if script runs
+
+        let selectedGroups = {};
+
+        // Fetch existing modifier groups
+        function loadExistingModifiers(itemId) {
+            console.log("Loading modifiers for item ID: " + itemId); // Debug
+            $.ajax({
+                url: '/Menu/GetModifiersByItemId',
+                type: 'GET',
+                data: { itemId: itemId },
+                dataType: 'json',
+                success: function (response) {
+                    console.log("GetModifiersByItemId response:", response); // Debug raw response
+                    if (response && Array.isArray(response) && response.length > 0) {
+                        response.forEach(function (group) {
+                            selectedGroups[group.modifierGroupId] = {
+                                modifierGroupName: group.modifierGroupName,
+                                minValue: group.minValue || 0,
+                                maxValue: group.maxValue || 0,
+                                modifiers: group.modifiers.map(modifier => ({
+                                    modifierId: modifier.modifierId,
+                                    modifierName: modifier.modifierName,
+                                    modifierRate: modifier.modifierRate
+                                }))
+                            };
+                        });
+                        console.log("Populated selectedGroups:", selectedGroups); // Debug after population
+                        renderModifiers();
+                    } else {
+                        console.log("No modifier groups found in response"); // Debug
+                        $('#modifiers-container').html('<div class="alert alert-info">No modifier groups found</div>');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error loading modifiers:", status, error, xhr.responseText); // Debug
+                    $('#modifiers-container').html('<div class="alert alert-danger">Error loading existing modifiers.</div>');
+                }
+            });
+        }
+
+        // Load modifiers on page load
+        var itemId = $('#item_Itemid').val();
+        if (itemId) {
+            console.log("Item ID found: " + itemId); // Debug
+            loadExistingModifiers(itemId);
+        } else {
+            console.error("Item ID not found"); // Debug
+        }
+
+        // Modifier group selection (unchanged for now, but ensure it matches)
+        $('.modifier-group-item').click(function (e) {
+            e.preventDefault();
+            var modifierGroupId = $(this).data('modifiergroup-id');
+            var groupName = $(this).text().trim();
+            var $checkbox = $(this).find('.modifier-checkbox');
+
+            console.log("Clicked modifier group ID: " + modifierGroupId); // Debug
+            $checkbox.prop('checked', !$checkbox.prop('checked'));
+
+            if (!selectedGroups[modifierGroupId]) {
+                $.ajax({
+                    url: '/Menu/GetModifiersByGroup',
+                    type: 'GET',
+                    data: { modifierGroupId: modifierGroupId },
+                    dataType: 'json',
+                    success: function (response) {
+                        console.log("GetModifiersByGroup response:", response); // Debug
+                        if (response && response.length > 0) {
+                            selectedGroups[modifierGroupId] = {
+                                modifierGroupName: groupName,
+                                minValue: 0,
+                                maxValue: 0,
+                                modifiers: response.map(modifier => ({
+                                    modifierId: modifier.modifierid,
+                                    modifierName: modifier.modifiername,
+                                    modifierRate: modifier.modifierrate
+                                }))
+                            };
+                            console.log("Added group to selectedGroups:", selectedGroups[modifierGroupId]); // Debug
+                            renderModifiers();
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error loading group modifiers:", status, error, xhr.responseText); // Debug
+                        $('#modifiers-container').html(`<div class="alert alert-danger">Error loading modifiers for ${groupName}</div>`);
+                    }
+                });
+            } else {
+                delete selectedGroups[modifierGroupId];
+                renderModifiers();
+            }
+        });
+
+        // Render modifier groups
+        function renderModifiers() {
+            console.log("Rendering modifiers with selectedGroups:", selectedGroups); // Debug
+            $('#modifiers-container').empty();
+            if (Object.keys(selectedGroups).length > 0) {
+                let html = '';
+                for (let groupId in selectedGroups) {
+                    let group = selectedGroups[groupId];
+                    console.log("Processing group ID:", groupId, "Data:", group); // Debug each group
+                    if (!group || !group.modifierGroupName) {
+                        console.error("Invalid group data for ID:", groupId, group); // Debug
+                        continue;
+                    }
+                    html += `
+                    <div class="mb-3">
+                        <div class="px-3 d-flex justify-content-between">
+                            <div style="font-size:20px">${group.modifierGroupName}</div>
+                            <div class="trash-icon" style="font-size:20px; cursor:pointer" data-group-id="${groupId}">
+                                <i class="bi bi-trash-fill"></i>
+                            </div>
+                        </div>
+                        <div class="px-3 pb-1 d-flex justify-content-between mt-1">
+                            <select class="form-select min-value" data-group-id="${groupId}" style="width: 80px;">
+                                <option value="0" ${group.minValue === 0 ? 'selected' : ''}>0</option>
+                                <option value="1" ${group.minValue === 1 ? 'selected' : ''}>1</option>
+                                <option value="2" ${group.minValue === 2 ? 'selected' : ''}>2</option>
+                                <option value="3" ${group.minValue === 3 ? 'selected' : ''}>3</option>
+                            </select>
+                            <select class="form-select max-value" data-group-id="${groupId}" style="width: 80px;">
+                                <option value="0" ${group.maxValue === 0 ? 'selected' : ''}>0</option>
+                                <option value="1" ${group.maxValue === 1 ? 'selected' : ''}>1</option>
+                                <option value="2" ${group.maxValue === 2 ? 'selected' : ''}>2</option>
+                                <option value="3" ${group.maxValue === 3 ? 'selected' : ''}>3</option>
+                            </select>
+                        </div>
+                        <ul>`;
+                    if (group.modifiers && Array.isArray(group.modifiers)) {
+                        group.modifiers.forEach(function (modifier) {
+                            console.log("Processing modifier:", modifier); // Debug each modifier
+                            html += `
+                            <li class="px-3 d-flex justify-content-between" style="font-size:14px" data-modifier-id="${modifier.modifierId}">
+                                <span>${modifier.modifierName}</span>
+                                <span>${modifier.modifierRate}</span>
+                            </li>`;
+                        });
+                    } else {
+                        console.warn("No modifiers found for group ID:", groupId); // Debug
+                    }
+                    html += `</ul></div>`;
+                }
+                $('#modifiers-container').html(html);
+
+                $('.trash-icon').click(function () {
+                    const groupId = $(this).data('group-id');
+                    console.log("Removing group ID: " + groupId); // Debug
+                    delete selectedGroups[groupId];
+                    renderModifiers();
+                });
+
+                $('.min-value').change(function () {
+                    const groupId = $(this).data('group-id');
+                    selectedGroups[groupId].minValue = parseInt($(this).val());
+                    console.log("Updated minValue for " + groupId + ": " + selectedGroups[groupId].minValue); // Debug
+                });
+
+                $('.max-value').change(function () {
+                    const groupId = $(this).data('group-id');
+                    selectedGroups[groupId].maxValue = parseInt($(this).val());
+                    console.log("Updated maxValue for " + groupId + ": " + selectedGroups[groupId].maxValue); // Debug
+                });
+            } else {
+                console.log("No groups to render"); // Debug
+                $('#modifiers-container').html('<div class="alert alert-info">No modifier groups selected</div>');
+            }
+
+            $('.modifier-checkbox').each(function () {
+                var groupId = $(this).data('modifiergroup-id');
+                $(this).prop('checked', !!selectedGroups[groupId]);
+            });
+        }
+
+        // Rest of your code (form submission, etc.) remains unchanged
+    });
+</script>

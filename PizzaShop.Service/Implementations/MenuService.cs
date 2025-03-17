@@ -15,6 +15,7 @@ public class MenuService : IMenuService
     private readonly IGenericRepository<Item> _items;
     private readonly IGenericRepository<Modifiergroup> _modifierGroup;
     private readonly IGenericRepository<Modifier> _modifier;
+    private readonly IGenericRepository<ItemModifiergroupMapping> _itemModifiergroupMapping;
     private readonly IGenericRepository<Modfierandgroupsmapping> _modfierandGroupsMapping;
     private readonly IWebHostEnvironment _webHostEnvironment;
 
@@ -24,7 +25,8 @@ public class MenuService : IMenuService
         IGenericRepository<Modifiergroup> modifierGroup,
         IGenericRepository<Modifier> modifier,
         IWebHostEnvironment webHostEnvironment,
-        IGenericRepository<Modfierandgroupsmapping> modfierandGroupsMapping)
+        IGenericRepository<Modfierandgroupsmapping> modfierandGroupsMapping,
+        IGenericRepository<ItemModifiergroupMapping> itemModifiergroupMapping)
     {
         _category = category;
         _items = items;
@@ -32,6 +34,7 @@ public class MenuService : IMenuService
         _modifierGroup = modifierGroup;
         _modifier = modifier;
         _modfierandGroupsMapping = modfierandGroupsMapping;
+        _itemModifiergroupMapping = itemModifiergroupMapping;
     }
 
     public async Task<MenuWithItemsViewModel> GetAllCategory(int? categoryId = null, string? searchTerm = null, int pageNumber = 1, int pageSize = 5)
@@ -83,6 +86,7 @@ public class MenuService : IMenuService
     public async Task<List<Modifiergroup>> GetAllModifierGroup()
     {
         List<Modifiergroup>? mg = await _modifierGroup.GetAllAsync();
+        mg = mg.Where(u => u.Isdeleted == false).ToList();
         return mg;
     }
 
@@ -131,7 +135,8 @@ public class MenuService : IMenuService
             Createdat = DateTime.Now,
             Editedat = DateTime.Now,
             Createdbyid = model.Userid,
-            Editedbyid = model.Userid
+            Editedbyid = model.Userid,
+            Isdeleted = false,
         };
         await _category.AddAsync(category);
 
@@ -377,6 +382,38 @@ public class MenuService : IMenuService
         return mappings.Select(m => m.Modifiergroupid).ToList();
     }
 
+
+    public async Task<List<ModifierGroupDataHelperViewModel>?> GetModifierGroupsByItemId(int itemId)
+    {
+        List<ItemModifiergroupMapping>? imm = await _itemModifiergroupMapping.GetByItemIdAsync(itemId);
+
+
+        List<ModifierGroupDataHelperViewModel>? result = new List<ModifierGroupDataHelperViewModel>();
+        foreach (var m in imm)
+        {
+            ModifierGroupDataHelperViewModel r = new ModifierGroupDataHelperViewModel();
+            r.MinValue = m.Minvalue;
+            r.MaxValue = m.Maxvalue;
+            r.ModifierGroupid = m.Modifiergroupid;
+
+            Modifiergroup? mg = await _modifierGroup.GetByIdAsync(m.Modifiergroupid);
+            r.Modifiergroupname = mg.Modifiergroupname;
+            List<Modifier>? modifiers = await _modfierandGroupsMapping.GetModifiersByMGAsync(m.Modifiergroupid);
+            r.Modifiers = modifiers.Select(m => new ModifierData
+            {
+                ModifierId = m.Modifierid,
+                Modifiername = m.Modifiername,
+                Modifierrate = m.Modifierrate
+            }).ToList();
+            result.Add(r);
+        }
+
+        return result;
+    }
+
+
+
+
     public async Task EditModifierAsync(MenuWithItemsViewModel viewModel)
     {
         try
@@ -440,52 +477,101 @@ public class MenuService : IMenuService
         }
     }
 
-    public async Task AddItemAsync(MenuWithItemsViewModel viewModel, IFormFile? uploadFile, int userId)
+    public async Task AddItemAsync(MenuWithItemsViewModel viewModel, IFormFile? uploadFile, int userId, Dictionary<string, ModifierGroupDataHelperViewModel> modifierGroups)
     {
+        List<Category> c = await _category.GetAllCategoryAsync();
+        viewModel.Categories = c;
+        try
         {
-            try
+            Item item = new Item
             {
-                Item item = new Item
+                Itemname = viewModel.item?.Itemname,
+                Categoryid = viewModel.item.Categoryid,
+                Itemtype = viewModel.item?.Itemtype,
+                Rate = viewModel.item?.Rate,
+                Quantity = viewModel.item?.Quantity,
+                Units = viewModel.item?.Units,
+                Isavailabe = viewModel.item?.Isavailabe,
+                DefaultTax = viewModel.item.Defaulttax,
+                Taxpercentage = viewModel.item?.Taxpercentage,
+                Shortcode = viewModel.item?.Shortcode,
+                Description = viewModel.item?.Description,
+                Createdat = DateTime.Now,
+                Createdbyid = userId,
+                Status = 1,
+                Isdeleted = false,
+                Editedat = DateTime.Now,
+                Editedbyid = userId,
+                Favourite = false,
+                Deletedbyid = 0,
+            };
+
+            if (uploadFile != null && uploadFile.Length > 0)
+            {
+                string uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(uploadFile.FileName);
+                string uploadFolder = Path.Combine(_webHostEnvironment.WebRootPath, "items");
+                Directory.CreateDirectory(uploadFolder);
+                string filePath = Path.Combine(uploadFolder, uniqueFileName);
+
+                using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
                 {
-                    Itemname = viewModel.item?.Itemname,
-                    Categoryid = viewModel.item.Categoryid,
-                    Itemtype = viewModel.item?.Itemtype,
-                    Rate = viewModel.item?.Rate,
-                    Quantity = viewModel.item?.Quantity,
-                    Units = viewModel.item?.Units,
-                    Isavailabe = viewModel.item?.Isavailabe,
-                    DefaultTax = viewModel.item.Defaulttax,
-                    Taxpercentage = viewModel.item?.Taxpercentage,
-                    Shortcode = viewModel.item?.Shortcode,
-                    Description = viewModel.item?.Description,
+                    await uploadFile.CopyToAsync(fileStream);
+                }
+
+                item.Imageid = "/items/" + uniqueFileName;
+            }
+            await _items.AddAsync(item);
+
+
+            // adding into mapping table of item and modifier groupid : 
+            foreach (var g in modifierGroups)
+            {
+                ItemModifiergroupMapping m = new ItemModifiergroupMapping
+                {
+                    Itemid = item.Itemid,
+                    Modifiergroupid = int.Parse(g.Key),
+                    Minvalue = g.Value.MinValue,
+                    Maxvalue = g.Value.MaxValue,
+                    Isdeleted = false,
                     Createdat = DateTime.Now,
                     Createdbyid = userId,
-                    Status = 1
+                    Editedat = DateTime.Now,
+                    Editedbyid = userId
                 };
-
-                if (uploadFile != null && uploadFile.Length > 0)
-                {
-                    string uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(uploadFile.FileName);
-                    string uploadFolder = Path.Combine(_webHostEnvironment.WebRootPath, "items");
-                    Directory.CreateDirectory(uploadFolder);
-                    string filePath = Path.Combine(uploadFolder, uniqueFileName);
-
-                    using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
-                    {
-                        await uploadFile.CopyToAsync(fileStream);
-                    }
-
-                    item.Imageid = "/items/" + uniqueFileName;
-                }
-                await _items.AddAsync(item);
-
+                await _itemModifiergroupMapping.AddAsync(m);
             }
-            catch (Exception ex)
-            {
-                throw new Exception("Error adding item: " + ex.Message, ex);
-            }
-
         }
+        catch (Exception ex)
+        {
+            throw new Exception("Error adding item: " + ex.Message, ex);
+        }
+
+
+    }
+
+    public async Task<List<ModifierDtoViewModel>> GetModifiersByModifierGroupId(int modifierGroupId)
+    {
+        List<Modfierandgroupsmapping>? mapping = await _modfierandGroupsMapping.GetByModifierGroupIdAsync(modifierGroupId);
+        List<int>? modifierIds = (mapping != null) ? mapping.Select(u => u.Modifierid).ToList() : new List<int>();
+        List<ModifierDtoViewModel> modifiers = new List<ModifierDtoViewModel>();
+
+        if (modifierIds != null)
+        {
+            foreach (int id in modifierIds)
+            {
+                Modifier? m = await _modifier.GetByIdAsync(id);
+                if (m != null)
+                {
+                    modifiers.Add(new ModifierDtoViewModel
+                    {
+                        Modifierid = m.Modifierid,
+                        Modifiername = m.Modifiername,
+                        Modifierrate = m.Modifierrate
+                    });
+                }
+            }
+        }
+        return modifiers;
     }
 
     public async Task<Item?> GetItemById(int id)
@@ -521,7 +607,7 @@ public class MenuService : IMenuService
         return item;
     }
 
-    public async Task UpdateItemAsync(MenuWithItemsViewModel viewModel, IFormFile? uploadFile, int userId)
+    public async Task UpdateItemAsync(MenuWithItemsViewModel viewModel, IFormFile? uploadFile, int userId, Dictionary<string, ModifierGroupDataHelperViewModel> modifierGroups)
     {
         try
         {
@@ -572,6 +658,31 @@ public class MenuService : IMenuService
             }
 
             string? result = await _items.UpdateAsync(item);
+
+            List<ItemModifiergroupMapping>? imm = await _itemModifiergroupMapping.GetByItemIdAsync(item.Itemid);
+            foreach (var i in imm)
+            {
+                await _itemModifiergroupMapping.DeleteAsync(i);
+            }
+
+            foreach (var g in modifierGroups)
+            {
+                ItemModifiergroupMapping m = new ItemModifiergroupMapping
+                {
+                    Itemid = item.Itemid,
+                    Modifiergroupid = int.Parse(g.Key),
+                    Minvalue = g.Value.MinValue,
+                    Maxvalue = g.Value.MaxValue,
+                    Isdeleted = false,
+                    Createdat = DateTime.Now,
+                    Createdbyid = userId,
+                    Editedat = DateTime.Now,
+                    Editedbyid = userId
+                };
+                await _itemModifiergroupMapping.AddAsync(m);
+            }
+
+
             System.Console.WriteLine("result: " + result);
         }
         catch (Exception ex)

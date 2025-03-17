@@ -8,6 +8,7 @@ using PizzaShop.Core.Filters;
 using PizzaShop.Repository.Models;
 using PizzaShop.Repository.ModelView;
 using PizzaShop.Service.Interfaces;
+using System.Text.Json;
 
 namespace PizzaShop.Core.Controllers;
 
@@ -105,16 +106,6 @@ public class MenuController : Controller
         return RedirectToAction("Index");
     }
 
-    // [HttpPost]
-    // public async Task<IActionResult> AddModifierGroup(MenuWithItemsViewModel model)
-    // {
-    //     await _menuService.AddModifierGroupService(model);
-    //     await FetchData();
-    //     TempData["ModifierGroupAdd"] = "ModifierGroup added successfully";
-    //     return RedirectToAction("Index");
-    // }
-
-
 
     [HttpPost]
     public async Task<IActionResult> AddModifierGroup(MenuWithItemsViewModel model)
@@ -164,41 +155,96 @@ public class MenuController : Controller
         return RedirectToAction("Index");
     }
 
+    [HttpGet]
+    public async Task AddItem()
+    {
+        await FetchData();
+        List<Modifiergroup>? res = await _menuService.GetAllModifierGroup();
+        MenuWithItemsViewModel result = new MenuWithItemsViewModel();
+        result.modifiergroups = res;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetModifiersByGroup(int modifierGroupId)
+    {
+        try
+        {
+            List<ModifierDtoViewModel>? modifiers = await _menuService.GetModifiersByModifierGroupId(modifierGroupId);
+            return Json(modifiers);
+        }
+        catch (Exception ex)
+        {
+            System.Console.WriteLine("error in fatching modifiers is add item : " + ex.Message);
+            return StatusCode(500, new { error = "Error fetching modifiers" });
+        }
+    }
+
+    // [HttpGet]
+    // public async Task<IActionResult> GetModifierGroup(int id)
+    // {
+    //     var modifierGroup = await _menuService.GetModifierGroupById(id);
+    //     if (modifierGroup == null)
+    //         return NotFound();
+
+    //     return Json(new
+    //     {
+    //         modifiergroupid = modifierGroup.Modifiergroupid,
+    //         modifiergroupname = modifierGroup.Modifiergroupname,
+    //         modifiergroupdescription = modifierGroup.Modifiergroupdescription,
+    //         selectedModifiers = modifierGroup.selectedModifiersViewModels?.Select(m => new
+    //         {
+    //             modifierId = m.ModifierId,
+    //             modifierName = m.ModifierName
+    //         })
+    //     });
+    // }
+
+
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> AddItem(MenuWithItemsViewModel viewModel)
+    public async Task<IActionResult> AddItem(MenuWithItemsViewModel viewModel, string selectedModifierGroups)
     {
         if (viewModel.item == null)
         {
-            // Handle null item case early
             MenuWithItemsViewModel menu2 = await _menuService.GetAllCategory(0, "", 1, 5);
             menu2.item = viewModel.item;
             await FetchData();
             ModelState.AddModelError("", "Item details are required.");
             return View("Index", menu2);
         }
+
         if (viewModel.item != null)
         {
             try
             {
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+
+                var modifierGroups = JsonSerializer.Deserialize<Dictionary<string, ModifierGroupDataHelperViewModel>>(selectedModifierGroups, options);
+
                 await FetchData();
-                await _menuService.AddItemAsync(viewModel, viewModel.item?.UploadFiles, ViewBag.Userid);
+                await _menuService.AddItemAsync(viewModel, viewModel.item?.UploadFiles, ViewBag.Userid, modifierGroups);
 
                 TempData["SuccessMessage"] = "Item added successfully!";
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-                System.Console.WriteLine("error :" + ex.Message);
+                Console.WriteLine("Error: " + ex.Message);
                 MenuWithItemsViewModel menu1 = await _menuService.GetAllCategory(0, "", 1, 5);
                 menu1.item = viewModel.item;
                 return RedirectToAction("Index", menu1);
             }
         }
+
         MenuWithItemsViewModel menu = await _menuService.GetAllCategory(0, "", 1, 5);
         menu.item = viewModel.item;
         return RedirectToAction("Index", menu);
     }
+
+
 
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -332,6 +378,43 @@ public class MenuController : Controller
 
 
     [HttpGet]
+    public async Task<IActionResult> GetModifiersByItemId(int itemId)
+    {
+        try
+        {
+            List<ModifierGroupDataHelperViewModel>? modifierGroups = await _menuService.GetModifierGroupsByItemId(itemId);
+            var result = modifierGroups.Select(group => new
+            {
+                modifierGroupId = group.ModifierGroupid,
+                modifierGroupName = group.Modifiergroupname,
+                minValue = group.MinValue ?? 0,
+                maxValue = group.MaxValue ?? 0,
+                modifiers = group.Modifiers.Select(m => new
+                {
+                    modifierId = m.ModifierId,
+                    modifierName = m.Modifiername,
+                    modifierRate = m.Modifierrate
+                }).ToList()
+            }).ToList();
+            return Json(result);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching modifiers for item {itemId}: {ex.Message}");
+            return StatusCode(500, new { error = "Error fetching modifiers" });
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+    [HttpGet]
     public async Task<IActionResult> EditItemPartial(int id)
     {
         var item = await _menuService.GetItemById(id);
@@ -339,7 +422,7 @@ public class MenuController : Controller
         {
             return NotFound();
         }
-        var viewModel = new MenuWithItemsViewModel
+        MenuWithItemsViewModel viewModel = new MenuWithItemsViewModel
         {
             item = new ItemsViewModel
             {
@@ -356,7 +439,8 @@ public class MenuController : Controller
                 Shortcode = item.Shortcode,
                 Description = item.Description
             },
-            Categories = await _menuService.GetAllCategories()
+            Categories = await _menuService.GetAllCategories(),
+            modifiergroups = await _menuService.GetAllModifierGroup()
         };
         await FetchData();
         return PartialView("_EditItemPartial", viewModel);
@@ -423,7 +507,7 @@ public class MenuController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> EditItem(MenuWithItemsViewModel viewModel)
+    public async Task<IActionResult> EditItem(MenuWithItemsViewModel viewModel, string SelectedModifierGroups)
     {
         if (viewModel.item == null)
         {
@@ -433,8 +517,14 @@ public class MenuController : Controller
         try
         {
             await FetchData();
-            await _menuService.UpdateItemAsync(viewModel, viewModel.item.UploadFiles, viewModel.Userid);
+            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
+            var modifierGroups = string.IsNullOrEmpty(SelectedModifierGroups)
+                ? new Dictionary<string, ModifierGroupDataHelperViewModel>()
+                : JsonSerializer.Deserialize<Dictionary<string, ModifierGroupDataHelperViewModel>>(SelectedModifierGroups, options);
+
+            await _menuService.UpdateItemAsync(viewModel, viewModel.item.UploadFiles, viewModel.Userid, modifierGroups);
+            TempData["SuccessMessage"] = "Selected items edited successfully!";
             return Json(new { success = true, redirectUrl = Url.Action("Index") });
         }
         catch (Exception ex)
